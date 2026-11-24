@@ -155,13 +155,30 @@ active_page = s.page if s.page in [p for _,p in nav] else ('Akıllı koç' if s.
 for i,(col,(label,page)) in enumerate(zip(st.columns(5),nav)):
     with col:
         if st.button(label,key=f'nav{i}',type='primary' if active_page==page else 'secondary',use_container_width=True): go(page)
+st.markdown("""<style>
+.focus-scene {position:relative;overflow:hidden;border-radius:24px;height:180px;display:grid;place-items:center;text-align:center;color:#fff;background:linear-gradient(135deg,#14283c,#426079);}
+.focus-scene.library {background:linear-gradient(135deg,#30251d,#98754b)}
+.focus-scene.night {background:linear-gradient(135deg,#10162f,#343b69)}
+.focus-scene svg {position:absolute;inset:0;width:100%;height:100%;opacity:.55}
+.focus-scene strong {position:relative;font-size:25px;letter-spacing:-.8px;text-shadow:0 2px 10px #000}
+.st-key-aslan_float svg {animation:lion-float 4s ease-in-out infinite;transform-origin:center}
+@keyframes lion-float {50%{transform:translateY(-6px) rotate(3deg)}}
+@media(prefers-reduced-motion:reduce){.st-key-aslan_float svg{animation:none}}
+</style>""",unsafe_allow_html=True)
 if s.page=='Ana sayfa':
     all_answers=[v for vals in results.values() for v in vals]
     rate=round(100*sum(all_answers)/len(all_answers)) if all_answers else None
-    st.markdown(f'<div class="orbit-panel"><div class="orbit-copy"><small>Dijital öğrenci ikizin</small><strong>Hedefin: {profile_coach["target"]} puan</strong><span>{"Henüz cevap verisi yok" if rate is None else "Örnek sorulardaki doğru cevap oranı"}</span></div>{orbit(rate)}</div>',unsafe_allow_html=True)
-    a,b=st.columns(2)
-    a.metric('Çözülen soru',len(all_answers))
-    b.metric('Ölçülen ders',sum(bool(v) for v in results.values()))
+    total_topics=sum(map(len,TOPICS.values()))
+    completed_topics=sum(bool(v) for k,v in s.done.items() if k.startswith(level+'|'))
+    progress=round(100*completed_topics/total_topics)
+    st.markdown(f'<div class="orbit-panel"><div class="orbit-copy"><small>Memuriyet yolculuğum</small><strong>Hedefin: {profile_coach["target"]} puan</strong><span>Konu listesi ilerlemesi · {completed_topics}/{total_topics} konu</span></div>{orbit(progress)}</div>',unsafe_allow_html=True)
+    a,b,c=st.columns(3)
+    a.metric('Bugün',duration(today_seconds()))
+    b.metric('Çözülen soru',len(all_answers))
+    c.metric('Hedef puan',profile_coach['target'])
+    for i, pair in enumerate([ [('Odaklanma odası','Odaklanma odası'),('Memuriyet yolculuğum','Memuriyet yolculuğum')], [('Akıllı koç','Akıllı koç'),('Atama radarı','Kariyer ve atama merkezi')] ]):
+        for j,(col,(label,page)) in enumerate(zip(st.columns(2),pair)):
+            if col.button(label,key=f'menu_home_{i}_{j}',use_container_width=True): go(page)
     if st.button('Dijital profilimi incele',use_container_width=True): go('Bilgi DNA’m')
     st.subheader('Bugünkü programın')
     tasks=[f'{focus} · {profile_coach["minutes"]//3} dakika konu tekrarı',f'{unknown} · örnek soru çözümü','Yanlış soruları ve notları gözden geçir']
@@ -376,8 +393,30 @@ elif s.page=='Bilgi kartları':
     st.title('Bilgi kartları')
     for subject,question,options,correct,explanation in QUESTIONS:
         with st.expander(subject+' · '+question): st.write(options[correct]); st.write(explanation)
-elif s.page=='Çalışma takibim':
-    st.title('Çalışma takibim')
+elif s.page=='Memuriyet yolculuğum':
+    st.title('Memuriyet yolculuğum')
+    total=sum(map(len,TOPICS.values()))
+    done=sum(bool(v) for k,v in s.done.items() if k.startswith(level+'|'))
+    exams=sum(1 for k in s.answers if k.startswith(level+'|Deneme sınavları|'))
+    for label,desc,value in [('Başlangıç analizi','Örnek sorularla ölçülen dersler',sum(bool(v) for v in results.values())/len(TOPICS)),('Konu çalışmaları',f'{done}/{total} işaretlenen konu',done/total),('Deneme maratonu',f'{exams} deneme cevabı · İlk hedef 5 cevap',min(1,exams/5))]:
+        with st.container(border=True):
+            st.subheader(label); st.progress(value,text=desc)
+    if st.button('Konu listelerine git'): go('Konu listeleri')
+    if st.button('Sınav provası · Mini deneme'): go('Deneme sınavları')
+    if st.button('Tercih ve atama süreci'): go('Kariyer ve atama merkezi')
+    st.caption('İlerleme, oturum kayıtlarını gösterir; atanma olasılığı değildir.')
+elif s.page in ['Çalışma takibim','Odaklanma odası']:
+    room=s.page=='Odaklanma odası'
+    st.title(s.page)
+    if room:
+        scene=st.radio('Çalışma atmosferi',['Yağmurlu pencere','Kütüphane','Gece'],horizontal=True,key='room_scene')
+        cls={'Yağmurlu pencere':'rain','Kütüphane':'library','Gece':'night'}[scene]
+        art={'rain':'<path d="M30 0V180 M100 0V180 M170 0V180 M240 0V180 M0 90H300" stroke="#b9d5e5" stroke-width="3"/><path d="M45 10l-12 24 M130 30l-12 24 M210 65l-12 24 M270 10l-12 24" stroke="white"/>','library':'<path d="M0 60H300 M0 120H300 M30 10V60 M45 20V60 M90 5V60 M180 10V60 M210 20V60 M70 70V120 M230 70V120" stroke="#e7c49a" stroke-width="8"/>','night':'<circle cx="230" cy="45" r="26" fill="#e8e3c7"/><circle cx="70" cy="30" r="2" fill="white"/><circle cx="130" cy="80" r="3" fill="white"/>'}[cls]
+        st.markdown(f'<div class="focus-scene {cls}"><svg viewBox="0 0 300 180" preserveAspectRatio="xMidYMid slice">{art}</svg><strong>{scene}</strong></div>',unsafe_allow_html=True)
+        quiet=st.checkbox('Sade odaklanma görünümü',key='room_quiet')
+        if quiet: st.markdown('<style>[class*="st-key-nav"],.st-key-aslan_float,.st-key-live_support,.st-key-appearance_panel,.brand{display:none!important}</style>',unsafe_allow_html=True)
+        if st.button('Çalışma takibine dön'): go('Çalışma takibim')
+
     timer=s.study_timer
     if timer is None:
         subject=st.selectbox('Ders',list(TOPICS),key='study_subject')
@@ -408,6 +447,7 @@ elif s.page=='Çalışma takibim':
                 s.study_timer=None
                 st.rerun()
     clock()
+    if room and quiet: st.stop()
     logs=[x for x in s.study_logs if x['level']==level]
     today=study_day(); monday=today-timedelta(days=today.weekday())
     week=[x for x in logs if monday<=x['date']<=today]
@@ -438,7 +478,7 @@ elif s.page=='Çalışma takibim':
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.11 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.12 · Ar-Ge sürümü · Veriler oturumluk')
 
 # Aslan ve canlı koçluk: bağımsız demo bileşenleri.
 st.markdown("""<style>
