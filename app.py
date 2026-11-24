@@ -22,6 +22,7 @@ st.markdown("""<style>
 .st-key-menu5 button {background:#dceeff;color:#195da3;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu5 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
 .st-key-menu6 button {background:#f3e4ff;color:#8241ac;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu6 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
 .st-key-menu7 button {background:#d9f4f4;color:#087477;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu7 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu8 button {background:#e2e8ff;color:#3848a8;min-height:100px;border-radius:22px;font-weight:750}
 @media(max-width:600px) { .block-container {padding:2.5rem .85rem 1.2rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} }
 </style>""",unsafe_allow_html=True)
 TOPICS={
@@ -52,6 +53,82 @@ if s.page=='Ana Sayfa':
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
                 if st.button(f'{icon}\n\n{name}',use_container_width=True,key=f'menu{i+j}'): go(name)
+    if st.button('💼  Kariyer ve Atama Merkezi',use_container_width=True,key='menu8'): go('Kariyer ve Atama Merkezi')
+elif s.page=='Kariyer ve Atama Merkezi':
+    st.title('Kariyer ve Atama Merkezi')
+    st.caption('Ar-Ge demosu · Aşağıdaki ilanlar ve puanlar tamamen kurgusaldır.')
+    if 'career_saved' not in s: s.career_saved=[]
+    if 'career_profile' not in s: s.career_profile={}
+    profile=s.career_profile.get(level,{})
+    listings=[
+        dict(id=1,title='Örnek büro personeli',level='Lisans',city='Ankara',score=70,department='İşletme',kind='Sözleşmeli personel',past=82),
+        dict(id=2,title='Örnek memur',level='Ön Lisans',city='Elazığ',score=65,department='Tüm bölümler',kind='Memur',past=76),
+        dict(id=3,title='Örnek destek personeli',level='Ortaöğretim',city='Malatya',score=60,department='Tüm bölümler',kind='Sözleşmeli personel',past=72),
+        dict(id=4,title='Örnek idari personel',level='Lisans',city='İstanbul',score=75,department='Tüm bölümler',kind='Memur',past=85)]
+    section=st.radio('Bölüm',['Alım Haberleri','Kişisel Alım Radarı','Tercih Danışmanlığı','Geçmiş Puanlar','Başvuru Takvimim','Kaydedilen İlanlar'],key='career_section')
+    def matches(item):
+        return bool(profile) and item['level']==level and item['score']<=profile['score'] and (profile['city']=='Tüm Türkiye' or item['city']==profile['city']) and (item['department']=='Tüm bölümler' or item['department'].casefold()==profile['department'].strip().casefold()) and item['kind'] in profile['kinds']
+    def show_listing(item):
+        with st.container(border=True):
+            st.subheader(item['title'])
+            st.write(f"{item['city']} · {item['level']} · {item['kind']}")
+            st.write(f"Örnek taban başvuru puanı: {item['score']} · Bölüm: {item['department']}")
+            if matches(item): st.success('Demo filtrelerinle eşleşiyor.')
+            saved=item['id'] in s.career_saved
+            if st.button('Kaydı kaldır' if saved else 'İlanı kaydet',key=f"career_{section}_{item['id']}"):
+                if saved: s.career_saved.remove(item['id'])
+                else: s.career_saved.append(item['id'])
+                st.rerun()
+    if section=='Alım Haberleri':
+        for item in listings: show_listing(item)
+        st.markdown('Resmî kaynaklar: [ÖSYM](https://www.osym.gov.tr/) · [Kariyer Kapısı](https://kariyerkapisi.gov.tr/) · [Resmî Gazete](https://www.resmigazete.gov.tr/)')
+    elif section=='Kişisel Alım Radarı':
+        with st.form('radar_'+level):
+            department=st.text_input('Mezuniyet bölümü',value=profile.get('department',''))
+            score=st.number_input('KPSS puanı',min_value=0.0,max_value=100.0,value=float(profile.get('score',75)))
+            cities=['Tüm Türkiye','Ankara','Elazığ','Malatya','İstanbul']
+            city=st.selectbox('Şehir',cities,index=cities.index(profile.get('city','Tüm Türkiye')))
+            kinds=st.multiselect('Kadro türleri',['Memur','Sözleşmeli personel'],default=profile.get('kinds',['Memur','Sözleşmeli personel']))
+            notify=st.checkbox('Bildirim almak istiyorum (demo tercihi)',value=profile.get('notify',False))
+            if st.form_submit_button('Filtreleri kaydet'):
+                s.career_profile[level]=dict(department=department,score=score,city=city,kinds=kinds,notify=notify)
+                st.rerun()
+        st.caption('Gerçek telefon bildirimi gönderilmez.')
+        found=[item for item in listings if matches(item)]
+        st.metric('Eşleşen örnek ilan',len(found))
+        for item in found: show_listing(item)
+    elif section=='Tercih Danışmanlığı':
+        st.info('Örnek puan karşılaştırmasıdır; atanma olasılığı veya garantisi değildir.')
+        if not profile: st.warning('Önce Kişisel Alım Radarı bölümünde profilini oluştur.')
+        else:
+            found=[item for item in listings if matches(item)]
+            if not found: st.write('Filtrelerine uygun örnek kadro yok.')
+            for item in found:
+                with st.container(border=True):
+                    st.subheader(item['title'])
+                    diff=profile['score']-item['past']
+                    st.metric('Kurgusal geçmiş puana göre fark',f'{diff:+.1f}')
+                    st.write('Geçmiş örnek puanın üzerinde' if diff>=0 else 'Geçmiş örnek puanın altında')
+        st.caption('Gerçek danışmanlıkta puan türü, nitelik kodları ve resmî kılavuz doğrulanmalıdır.')
+    elif section=='Geçmiş Puanlar':
+        for item in listings:
+            if item['level']==level: st.metric(item['title']+' · Kurgusal geçmiş puan',item['past'])
+    elif section=='Başvuru Takvimim':
+        if 'career_dates' not in s: s.career_dates=[]
+        with st.form('career_date'):
+            title=st.text_input('Başvuru / hatırlatma adı')
+            date=st.date_input('Son başvuru tarihi')
+            if st.form_submit_button('Takvime ekle') and title.strip():
+                s.career_dates.append((title.strip(),date)); st.rerun()
+        for i,(title,date) in enumerate(s.career_dates):
+            st.write(f'{date:%d.%m.%Y} · {title}')
+            if st.button('Sil',key=f'career_date_delete_{i}'):
+                s.career_dates.pop(i); st.rerun()
+        st.caption('Takvim oturumluk kayıt tutar; otomatik hatırlatma göndermez.')
+    else:
+        if not s.career_saved: st.info('Henüz kayıtlı ilan yok.')
+        for item in listings:
+            if item['id'] in s.career_saved: show_listing(item)
 elif s.page=='Konu Listeleri':
     st.title('Konu Listeleri')
     subject=st.selectbox('Ders seç',list(TOPICS))
@@ -146,4 +223,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.3 · Oturumluk demo')
+st.caption('V0.4 · Oturumluk demo')
