@@ -31,6 +31,11 @@ st.markdown("""<style>
 .st-key-menu8 button {background:#17243d;color:white;min-height:88px;border-color:#17243d}
 .st-key-menu8 button:hover {background:#26395c;color:white}
 @media(max-width:600px) {.block-container {padding:2rem 1rem 1.5rem}.stApp h1 {font-size:1.65rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} [class*="st-key-menu"] button {min-height:100px;padding:12px} [class*="st-key-menu"] button p {font-size:.88rem}}
+
+.hero {background:linear-gradient(125deg,#24346b,#5264df);border-radius:24px;padding:26px;color:white;margin:8px 0 16px;box-shadow:0 12px 30px #26366c22}
+.hero small {color:#dce4ff;font:600 12px Inter,Arial;letter-spacing:1px}.hero strong {display:block;font:800 30px Manrope,Arial;margin:10px 0}.hero span {color:#e5eaff;font:400 14px Inter,Arial}
+[class*="st-key-nav"] button {background:white;color:#5264df;border:1px solid #dfe5ef;min-height:44px;padding:5px;font-size:12px}
+@media(max-width:600px){[data-testid="stHorizontalBlock"]:has([class*="st-key-nav"]){flex-wrap:nowrap!important;gap:4px!important}[data-testid="stHorizontalBlock"]:has([class*="st-key-nav"]) > [data-testid="stColumn"]{min-width:0!important;flex:1 1 0!important;width:19%!important}[class*="st-key-nav"] button p{font-size:10px!important}[class*="st-key-nav"] button{padding:4px!important}.hero{padding:20px}.hero strong{font-size:25px}}
 </style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
@@ -43,8 +48,7 @@ QUESTIONS=[('Coğrafya','Tamamı Türkiye sınırları içinde kalan en uzun aka
 for k,v in {'page':'Ana Sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},'wrong':{},'retry':0,'practice':0}.items():
     if k not in st.session_state: st.session_state[k]=v
 s=st.session_state
-if s.page == 'Ana Sayfa':
-    st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS</div></div>',unsafe_allow_html=True)
+st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS.</div></div>',unsafe_allow_html=True)
 level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön Lisans','Lisans'],key='level')
 def go(page):
     s.page=page
@@ -52,15 +56,81 @@ def go(page):
     if page=='Deneme Sınavları': s.exam+=1
     if page=='Soru Bankası': s.practice+=1
     st.rerun()
-if s.page!='Ana Sayfa':
-    if st.button('← Ana sayfa'): go('Ana Sayfa')
+from datetime import date
+if 'coach_profiles' not in s: s.coach_profiles={}
+if 'daily_tasks' not in s: s.daily_tasks={}
+profile_coach=s.coach_profiles.get(level,{'target':85,'minutes':45})
+def stats():
+    result={name:[] for name in TOPICS}
+    for key,value in s.answers.items():
+        parts=key.split('|')
+        if len(parts)==4 and parts[0]==level:
+            idx=int(parts[-1])
+            if 0<=idx<len(QUESTIONS): result[QUESTIONS[idx][0]].append(bool(value[0]))
+    return result
+results=stats()
+weak=sorted([name for name,vals in results.items() if vals],key=lambda name:sum(results[name])/len(results[name]))
+focus=weak[0] if weak else 'Türkçe'
+unknown=next((name for name,vals in results.items() if not vals),focus)
+nav=[('Bugün','Ana Sayfa'),('Dersler','Dersler'),('Koçum','Akıllı Koç'),('Kariyer','Kariyer ve Atama Merkezi'),('Profil','Profil')]
+for i,(col,(label,page)) in enumerate(zip(st.columns(5),nav)):
+    with col:
+        if st.button(label,key=f'nav{i}',use_container_width=True): go(page)
 if s.page=='Ana Sayfa':
+    st.title('Bugünkü programın')
+    st.markdown(f'<div class="hero"><small>KİŞİSEL ÇALIŞMA PLANI</small><strong>Hedef: {profile_coach["target"]} puan</strong><span>{profile_coach["minutes"]} dakika · {focus} odaklı çalışma</span></div>',unsafe_allow_html=True)
+    tasks=[f'{focus} · {profile_coach["minutes"]//3} dakika konu tekrarı',f'{unknown} · örnek soru çözümü','Yanlış soruları ve notları gözden geçir']
+    daykey=(level,date.today().isoformat())
+    completed=s.daily_tasks.setdefault(daykey,{})
+    for i,task in enumerate(tasks):
+        completed[task]=st.checkbox(task,value=completed.get(task,False),key=f'daily_{daykey}_{task}')
+    count=sum(bool(completed.get(task)) for task in tasks)
+    st.progress(count/len(tasks),text=f'{count}/{len(tasks)} görev tamamlandı')
+    if st.button('Çalışmaya başla',use_container_width=True): go('Soru Bankası')
+    a,b=st.columns(2)
+    with a:
+        if st.button('Akıllı Koç',icon=':material/psychology:',key='menu10',use_container_width=True): go('Akıllı Koç')
+    with b:
+        if st.button('Bilgi DNA’m',icon=':material/monitoring:',key='menu11',use_container_width=True): go('Bilgi DNA’m')
+    if st.button('Atama Radarı',use_container_width=True): go('Kariyer ve Atama Merkezi')
+    st.caption('Görevler örnek çalışma önerileridir; tamamlanma durumunu sen işaretlersin.')
+elif s.page=='Dersler':
+    st.title('Çalışma alanın')
     modules=[('menu_book','Konu Listeleri'),('quiz','Soru Bankası'),('edit_note','Kendi Notlarım'),('assignment_late','Yanlış Soru Defterim'),('public','Coğrafya Atlası'),('timer','Deneme Sınavları'),('style','Bilgi Kartları'),('monitoring','Çalışma Takibim')]
     for i in range(0,len(modules),2):
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
                 if st.button(name,icon=f':material/{icon}:',use_container_width=True,key=f'menu{i+j}'): go(name)
-    if st.button('Kariyer ve Atama Merkezi',icon=':material/work_outline:',use_container_width=True,key='menu8'): go('Kariyer ve Atama Merkezi')
+elif s.page=='Profil':
+    st.title('Çalışma profilim')
+    with st.form('coach_profile_'+level):
+        target=st.slider('Hedef KPSS puanı',50,100,int(profile_coach['target']))
+        minutes=st.slider('Günlük çalışma süresi (dakika)',15,180,int(profile_coach['minutes']),step=15)
+        if st.form_submit_button('Profili kaydet'):
+            s.coach_profiles[level]={'target':target,'minutes':minutes}; st.rerun()
+    st.caption('Profil yalnızca bu oturumda saklanır.')
+elif s.page=='Akıllı Koç':
+    st.title('Akıllı KPSS Koçu')
+    st.caption('Kural tabanlı Ar-Ge prototipi · Yapay zekâ bağlantısı yok.')
+    if not weak: st.info('Henüz performans verin yok. Önce örnek soruları çözerek başlayabilirsin.')
+    else:
+        st.subheader('Öncelikli çalışma alanın: '+focus)
+        vals=results[focus]
+        st.write(f'Bu derste {len(vals)} cevapta {sum(vals)} doğru kaydedildi. Daha fazla soru çözerek ölçümü güçlendir.')
+    st.write(f'Günlük hedefin: {profile_coach["minutes"]} dakika. Henüz ölçülmemiş ders: {unknown}.' if not results[unknown] else f'Günlük hedefin: {profile_coach["minutes"]} dakika.')
+    if st.button('Bilgi DNA’mı incele'): go('Bilgi DNA’m')
+    if st.button('Soru çözmeye başla'): go('Soru Bankası')
+elif s.page=='Bilgi DNA’m':
+    st.title('Bilgi DNA’m')
+    st.caption('Gerçek oturum cevaplarından hesaplanan başarı oranı; konu hâkimiyeti veya KPSS puan tahmini değildir.')
+    for name,vals in results.items():
+        with st.container(border=True):
+            st.subheader(name)
+            if vals:
+                rate=sum(vals)/len(vals)
+                st.progress(rate,text=f'%{round(rate*100)} doğru · {len(vals)} cevap')
+            else: st.caption('Henüz ölçülmedi')
+    if st.button('Koç önerilerime dön'): go('Akıllı Koç')
 elif s.page=='Kariyer ve Atama Merkezi':
     st.title('Kariyer ve Atama Merkezi')
     st.caption('Ar-Ge demosu · Aşağıdaki ilanlar ve puanlar tamamen kurgusaldır.')
@@ -230,4 +300,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.5 · Oturumluk demo')
+st.caption('V0.6 · Oturumluk demo')
