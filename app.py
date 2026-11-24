@@ -1,9 +1,29 @@
 import streamlit as st
 
 st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='centered')
-st.markdown('''<style>
-.stApp {background:#f4f7fc;color:#18243b} [data-testid="stHeader"] {background:#f4f7fc} .stMarkdown h1,.stMarkdown h2,.stMarkdown h3,.stMarkdown p,[data-testid="stWidgetLabel"] p,[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {color:#18243b!important} .stButton button {border-radius:14px;min-height:48px;background:#e3ebff;color:#243047;border:0;font-weight:600} .stButton button:hover {background:#cbdcff;color:#18243b} [data-testid="stRadio"] label p,[data-testid="stCheckbox"] label p {color:#18243b!important} [data-testid="stCaptionContainer"] p {color:#52627a!important} .st-key-menu0 button,.st-key-menu1 button,.st-key-menu2 button,.st-key-menu3 button,.st-key-menu4 button,.st-key-menu5 button,.st-key-menu6 button,.st-key-menu7 button {min-height:100px;font-size:1.05rem;border-radius:18px} .st-key-menu0 button {background:#dce7ff} .st-key-menu1 button {background:#e9dfff} .st-key-menu2 button {background:#ffebc5} .st-key-menu3 button {background:#ffdde5} .st-key-menu4 button {background:#d3f4e7} .st-key-menu5 button {background:#dceeff} .st-key-menu6 button {background:#f0ddff} .st-key-menu7 button {background:#d5f4f4}
-</style>''',unsafe_allow_html=True)
+st.markdown("""<style>
+.stApp, [data-testid="stHeader"] {background:#f7f8fc;color:#18243b}
+.block-container {max-width:760px;padding:2.8rem 1.1rem 2rem}
+.stApp h1,.stApp h2,.stApp h3,.stApp p,[data-testid="stMetricValue"] {color:#18243b}
+.stApp h1 {font-size:2rem;letter-spacing:-.06em;font-weight:800}
+[data-testid="stWidgetLabel"] p {color:#475569;font-weight:600}
+[data-baseweb="select"] > div, textarea {background:#fff!important;color:#18243b!important;border-radius:14px!important}
+.stButton button,.stFormSubmitButton button {background:#5046e5;color:white;border:0;border-radius:14px;min-height:46px;font-weight:650}
+.stButton button p,.stFormSubmitButton button p {color:inherit!important}
+.stButton button:hover {filter:brightness(.96);color:white}
+[data-testid="stExpander"], [data-testid="stMetric"], [data-testid="stVerticalBlockBorderWrapper"] {border-radius:18px;background:white}
+[data-testid="stMetric"] {padding:12px}
+[data-testid="stCaptionContainer"] p {color:#64748b}
+.st-key-menu0 button {background:#e0e9ff;color:#284bb4;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu0 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu1 button {background:#eee4ff;color:#7040bb;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu1 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu2 button {background:#fff0cc;color:#935c0b;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu2 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu3 button {background:#ffe3eb;color:#a72d55;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu3 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu4 button {background:#d9f5e8;color:#14734f;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu4 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu5 button {background:#dceeff;color:#195da3;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu5 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu6 button {background:#f3e4ff;color:#8241ac;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu6 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+.st-key-menu7 button {background:#d9f4f4;color:#087477;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu7 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
+@media(max-width:600px) { .block-container {padding:2.5rem .85rem 1.2rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} }
+</style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
 'Matematik':['Temel kavramlar','Sayılar','Bölünebilme','Rasyonel sayılar','Üslü ve köklü sayılar','Denklemler','Oran ve orantı','Problemler','Sayısal mantık','Geometri'],
@@ -31,7 +51,7 @@ if s.page=='Ana Sayfa':
     for i in range(0,len(modules),2):
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
-                if st.button(f'{icon} {name}',use_container_width=True,key=f'menu{i+j}'): go(name)
+                if st.button(f'{icon}\n\n{name}',use_container_width=True,key=f'menu{i+j}'): go(name)
 elif s.page=='Konu Listeleri':
     st.title('Konu Listeleri')
     subject=st.selectbox('Ders seç',list(TOPICS))
@@ -126,4 +146,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.2 · Oturumluk demo')
+st.caption('V0.3 · Oturumluk demo')
