@@ -92,7 +92,21 @@ def go(page):
     if page=='Deneme sınavları': s.exam+=1
     if page=='Soru bankası': s.practice+=1
     st.rerun()
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
+import time
+import pandas as pd
+TR = timezone(timedelta(hours=3))
+def study_day():
+    return datetime.now(TR).date()
+if "study_logs" not in s: s.study_logs=[]
+if "study_timer" not in s: s.study_timer=None
+def elapsed(timer):
+    return timer["seconds"] + (max(0,time.monotonic()-timer["start"]) if timer["start"] is not None else 0)
+def duration(seconds):
+    minutes=int(seconds)//60
+    return f"{minutes//60} sa. {minutes%60} dk."
+def today_seconds():
+    return sum(x["seconds"] for x in s.study_logs if x["level"]==level and x["date"]==study_day())
 if 'coach_profiles' not in s: s.coach_profiles={}
 if 'daily_tasks' not in s: s.daily_tasks={}
 profile_coach=s.coach_profiles.get(level,{'target':85,'minutes':45})
@@ -129,7 +143,9 @@ if s.page=='Ana sayfa':
         completed[task]=st.checkbox(task,value=completed.get(task,False),key=f'daily_{daykey}_{task}')
     count=sum(bool(completed.get(task)) for task in tasks)
     st.progress(count/len(tasks),text=f'{count}/{len(tasks)} görev tamamlandı')
-    if st.button('Çalışmaya başla',use_container_width=True): go('Soru bankası')
+    st.metric('Bugünkü çalışma süren',duration(today_seconds()))
+    if st.button('Kronometreyi aç',use_container_width=True): go('Çalışma takibim')
+    if st.button('Soru çözmeye başla',use_container_width=True): go('Soru bankası')
     st.caption('Örnek çalışma planı · Görevleri tamamladıkça işaretle.')
 elif s.page=='Dersler':
     st.title('Eğitim')
@@ -155,6 +171,7 @@ elif s.page=='Akıllı koç':
         vals=results[focus]
         st.write(f'Bu derste {len(vals)} cevapta {sum(vals)} doğru kaydedildi. Daha fazla soru çözerek ölçümü güçlendir.')
     st.write(f'Günlük hedefin: {profile_coach["minutes"]} dakika. Henüz ölçülmemiş ders: {unknown}.' if not results[unknown] else f'Günlük hedefin: {profile_coach["minutes"]} dakika.')
+    st.write('Bugün kaydedilen çalışma: '+duration(today_seconds()))
     if st.button('Bilgi DNA’mı incele'): go('Bilgi DNA’m')
     if st.button('Soru çözmeye başla'): go('Soru bankası')
 elif s.page=='Bilgi DNA’m':
@@ -331,8 +348,61 @@ elif s.page=='Bilgi kartları':
     st.title('Bilgi kartları')
     for subject,question,options,correct,explanation in QUESTIONS:
         with st.expander(subject+' · '+question): st.write(options[correct]); st.write(explanation)
-else:
+elif s.page=='Çalışma takibim':
     st.title('Çalışma takibim')
+    timer=s.study_timer
+    if timer is None:
+        subject=st.selectbox('Ders',list(TOPICS),key='study_subject')
+        topic=st.selectbox('Konu',TOPICS[subject],key='study_topic')
+        if st.button('Çalışmayı başlat',key='study_start',use_container_width=True):
+            s.study_timer=dict(level=level,subject=subject,topic=topic,seconds=0.0,start=time.monotonic())
+            st.rerun()
+    else:
+        st.caption(timer['level']+' · '+timer['subject']+' · '+timer['topic'])
+    @st.fragment(run_every=1 if timer and timer['start'] is not None else None)
+    def clock():
+        current=s.study_timer
+        sec=int(elapsed(current)) if current else 0
+        display=f'{sec//3600:02d}:{sec//60%60:02d}:{sec%60:02d}'
+        status='Çalışılıyor' if current and current['start'] is not None else ('Duraklatıldı' if current else 'Başlamaya hazır')
+        st.markdown(f'<div style="background:radial-gradient(ellipse at top,#344c93,#101a38);border-radius:24px;padding:32px 12px;text-align:center;color:white"><div style="font-size:13px;color:#c5d2f5">{status}</div><div style="font:800 clamp(32px,8vw,58px) Manrope,Arial;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin:12px 0">{display}</div><div style="color:#c5d2f5;font-size:13px">Çalışma süresi</div></div>',unsafe_allow_html=True)
+        if current:
+            a,b=st.columns(2)
+            if a.button('Duraklat' if current['start'] is not None else 'Devam et',key='study_pause',use_container_width=True):
+                if current['start'] is not None:
+                    current['seconds']=elapsed(current); current['start']=None
+                else: current['start']=time.monotonic()
+                st.rerun()
+            if b.button('Bitir ve kaydet',key='study_finish',use_container_width=True):
+                seconds=elapsed(current)
+                if seconds>=1:
+                    s.study_logs.append(dict(level=current['level'],subject=current['subject'],topic=current['topic'],seconds=seconds,date=study_day()))
+                s.study_timer=None
+                st.rerun()
+    clock()
+    logs=[x for x in s.study_logs if x['level']==level]
+    today=study_day(); monday=today-timedelta(days=today.weekday())
+    week=[x for x in logs if monday<=x['date']<=today]
+    a,b=st.columns(2)
+    a.metric('Bugün',duration(today_seconds()))
+    b.metric('Bu hafta',duration(sum(x['seconds'] for x in week)))
+    target=profile_coach['minutes']*60
+    st.progress(min(1.0,today_seconds()/target),text=f'Günlük hedef: {profile_coach["minutes"]} dakika')
+    st.subheader('Haftalık çalışma grafiği')
+    days=[monday+timedelta(days=i) for i in range(7)]
+    frame=pd.DataFrame({'Gün':[d.strftime('%d.%m') for d in days],'Dakika':[round(sum(x['seconds'] for x in week if x['date']==d)/60,2) for d in days]})
+    st.bar_chart(frame,x='Gün',y='Dakika',color='#5264df')
+    st.subheader('Derslere göre çalışma süresi')
+    if week:
+        frame=pd.DataFrame({'Ders':list(TOPICS),'Dakika':[round(sum(x['seconds'] for x in week if x['subject']==name)/60,2) for name in TOPICS]})
+        st.bar_chart(frame,x='Ders',y='Dakika',color='#23b5a0')
+    else: st.info('Grafikler ilk çalışma kaydından sonra dolacak.')
+    with st.expander('Çalışma geçmişim'):
+        for item in reversed(logs):
+            st.write(f"{item['date']:%d.%m.%Y} · {item['subject']} · {item['topic']} · {int(item['seconds'])//60} dk. {int(item['seconds'])%60} sn.")
+        if not logs: st.caption('Henüz çalışma kaydı yok.')
+    st.caption('Süreler bitirip kaydettiğinde grafiklere eklenir. Kayıt tarihi bitiş günüdür. Kronometre diğer sayfalarda da süre sayar; oturum kapanırsa kayıtlar kaybolabilir.')
+    st.subheader('Soru ve konu istatistikleri')
     answers=[v for k,v in s.answers.items() if k.startswith(level+'|')]
     correct=sum(v[0] for v in answers)
     a,b=st.columns(2); a.metric('Doğru',correct); b.metric('Yanlış',len(answers)-correct)
@@ -340,4 +410,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.8 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.9 · Ar-Ge sürümü · Veriler oturumluk')
