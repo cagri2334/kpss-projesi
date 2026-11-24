@@ -1,29 +1,36 @@
 import streamlit as st
 
-st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='centered')
+st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='wide')
 st.markdown("""<style>
-.stApp, [data-testid="stHeader"] {background:#f7f8fc;color:#18243b}
-.block-container {max-width:760px;padding:2.8rem 1.1rem 2rem}
-.stApp h1,.stApp h2,.stApp h3,.stApp p,[data-testid="stMetricValue"] {color:#18243b}
-.stApp h1 {font-size:2rem;letter-spacing:-.06em;font-weight:800}
-[data-testid="stWidgetLabel"] p {color:#475569;font-weight:600}
-[data-baseweb="select"] > div, textarea {background:#fff!important;color:#18243b!important;border-radius:14px!important}
-.stButton button,.stFormSubmitButton button {background:#5046e5;color:white;border:0;border-radius:14px;min-height:46px;font-weight:650}
-.stButton button p,.stFormSubmitButton button p {color:inherit!important}
-.stButton button:hover {filter:brightness(.96);color:white}
-[data-testid="stExpander"], [data-testid="stMetric"], [data-testid="stVerticalBlockBorderWrapper"] {border-radius:18px;background:white}
-[data-testid="stMetric"] {padding:12px}
-[data-testid="stCaptionContainer"] p {color:#64748b}
-.st-key-menu0 button {background:#e0e9ff;color:#284bb4;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu0 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu1 button {background:#eee4ff;color:#7040bb;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu1 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu2 button {background:#fff0cc;color:#935c0b;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu2 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu3 button {background:#ffe3eb;color:#a72d55;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu3 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu4 button {background:#d9f5e8;color:#14734f;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu4 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu5 button {background:#dceeff;color:#195da3;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu5 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu6 button {background:#f3e4ff;color:#8241ac;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu6 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu7 button {background:#d9f4f4;color:#087477;min-height:120px;border-radius:22px;padding:14px;box-shadow:0 3px 0 #17243b0b;white-space:pre-line} .st-key-menu7 button p {font-size:1.03rem;font-weight:750;white-space:pre-line}
-.st-key-menu8 button {background:#e2e8ff;color:#3848a8;min-height:100px;border-radius:22px;font-weight:750}
-@media(max-width:600px) { .block-container {padding:2.5rem .85rem 1.2rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+.stApp {background:#f2f5fa;color:#17243d;color-scheme:light}
+[data-testid="stHeader"] {background:transparent}
+#MainMenu, footer, [data-testid="stToolbar"] {visibility:hidden}
+.block-container {max-width:960px;padding:3rem 2rem 2rem}
+.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp button {font-family:Inter,Arial,sans-serif;color:#17243d}
+.stApp h1,.stApp h2,.stApp h3 {font-family:Manrope,Arial,sans-serif;color:#17243d;letter-spacing:-.045em;font-weight:800}
+.stApp h1 {font-size:2rem}
+[data-testid="stWidgetLabel"] p {font-size:.83rem;font-weight:600;color:#475569}
+[data-testid="stCaptionContainer"] p {color:#64748b;font-size:.78rem}
+[data-baseweb="select"] > div,[data-baseweb="input"],[data-baseweb="textarea"] {background:white!important;color:#17243d!important;border:1px solid #dce3ef!important;border-radius:12px!important}
+[data-baseweb="select"] span,[data-baseweb="select"] input {color:#17243d!important}
+.stButton button,.stFormSubmitButton button {background:#5264df;color:white;border:1px solid transparent;border-radius:12px;min-height:46px;font-weight:600;transition:all .18s ease}
+.stButton button p,.stFormSubmitButton button p {color:inherit!important;font-weight:600}
+.stButton button:hover,.stFormSubmitButton button:hover {background:#4052c9;color:white;border-color:transparent}
+.stButton button:disabled {opacity:.5}
+[data-testid="stExpander"],[data-testid="stMetric"],[data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {background:white;border:1px solid #e0e6f0;border-radius:16px}
+[data-testid="stMetric"] {padding:18px}
+[data-testid="stMetricValue"] {color:#5264df;font-family:Manrope,Arial,sans-serif;font-weight:800}
+[data-testid="stMetricLabel"] p {color:#475569}
+.brand {display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.brand-mark {display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#5264df;color:white;font:800 25px Manrope,Arial,sans-serif}
+.brand-name {font:800 32px Manrope,Arial,sans-serif;letter-spacing:-2px;color:#17243d}
+[class*="st-key-menu"] button {background:#fff;color:#17243d;border:1px solid #dfe5ef;border-radius:18px;min-height:108px;justify-content:flex-start;text-align:left;padding:18px;box-shadow:0 4px 14px #17243d08}
+[class*="st-key-menu"] button p {font-family:Manrope,Arial,sans-serif;font-size:1rem;font-weight:800;line-height:1.35;text-align:left}
+[class*="st-key-menu"] button:hover {background:#eef1ff;color:#4052c9;border-color:#aab5f2;transform:translateY(-2px)}
+.st-key-menu8 button {background:#17243d;color:white;min-height:88px;border-color:#17243d}
+.st-key-menu8 button:hover {background:#26395c;color:white}
+@media(max-width:600px) {.block-container {padding:2rem 1rem 1.5rem}.stApp h1 {font-size:1.65rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} [class*="st-key-menu"] button {min-height:100px;padding:12px} [class*="st-key-menu"] button p {font-size:.88rem}}
 </style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
@@ -37,7 +44,7 @@ for k,v in {'page':'Ana Sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},
     if k not in st.session_state: st.session_state[k]=v
 s=st.session_state
 if s.page == 'Ana Sayfa':
-    st.title('KPSS')
+    st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS</div></div>',unsafe_allow_html=True)
 level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön Lisans','Lisans'],key='level')
 def go(page):
     s.page=page
@@ -48,12 +55,12 @@ def go(page):
 if s.page!='Ana Sayfa':
     if st.button('← Ana sayfa'): go('Ana Sayfa')
 if s.page=='Ana Sayfa':
-    modules=[('📚','Konu Listeleri'),('✍️','Soru Bankası'),('📝','Kendi Notlarım'),('📕','Yanlış Soru Defterim'),('🗺️','Coğrafya Atlası'),('⏱️','Deneme Sınavları'),('💡','Bilgi Kartları'),('📊','Çalışma Takibim')]
+    modules=[('menu_book','Konu Listeleri'),('quiz','Soru Bankası'),('edit_note','Kendi Notlarım'),('assignment_late','Yanlış Soru Defterim'),('public','Coğrafya Atlası'),('timer','Deneme Sınavları'),('style','Bilgi Kartları'),('monitoring','Çalışma Takibim')]
     for i in range(0,len(modules),2):
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
-                if st.button(f'{icon}\n\n{name}',use_container_width=True,key=f'menu{i+j}'): go(name)
-    if st.button('💼  Kariyer ve Atama Merkezi',use_container_width=True,key='menu8'): go('Kariyer ve Atama Merkezi')
+                if st.button(name,icon=f':material/{icon}:',use_container_width=True,key=f'menu{i+j}'): go(name)
+    if st.button('Kariyer ve Atama Merkezi',icon=':material/work_outline:',use_container_width=True,key='menu8'): go('Kariyer ve Atama Merkezi')
 elif s.page=='Kariyer ve Atama Merkezi':
     st.title('Kariyer ve Atama Merkezi')
     st.caption('Ar-Ge demosu · Aşağıdaki ilanlar ve puanlar tamamen kurgusaldır.')
@@ -223,4 +230,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.4 · Oturumluk demo')
+st.caption('V0.5 · Oturumluk demo')
