@@ -410,4 +410,74 @@ elif s.page=='Çalışma takibim':
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.9 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.10 · Ar-Ge sürümü · Veriler oturumluk')
+
+# Aslan ve canlı koçluk: bağımsız demo bileşenleri.
+st.markdown("""<style>
+.block-container {padding-bottom:120px}
+.st-key-aslan_float {position:fixed;right:22px;bottom:22px;width:210px;z-index:999;}
+.st-key-aslan_float button {background:#17243d!important;color:white!important;border-radius:22px!important;box-shadow:0 8px 30px #17243d33;min-height:58px;}
+.st-key-aslan_float button p {color:white!important;font-size:13px;}
+.st-key-aslan_float svg {display:block;margin-left:auto;filter:drop-shadow(0 5px 8px #17243d22)}
+@media(max-width:600px){.st-key-aslan_float{right:12px;bottom:12px;width:185px}}
+</style>""",unsafe_allow_html=True)
+if 'aslan_messages' not in s: s.aslan_messages=[]
+if 'premium_demo' not in s: s.premium_demo=False
+if 'support_open' not in s: s.support_open=False
+if 'aslan_open' not in s: s.aslan_open=False
+if 'support_requests' not in s: s.support_requests=[]
+with st.container(key='aslan_float'):
+    st.markdown('<svg width="76" height="76" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Aslan maskotu"><circle cx="50" cy="50" r="47" fill="#fff5df"/><path d="M50 7 Q65 2 72 18 Q94 16 91 38 Q105 52 88 65 Q90 86 68 85 Q50 103 32 85 Q10 86 12 65 Q-5 52 9 38 Q6 16 28 18 Q35 2 50 7" fill="#b97627"/><circle cx="28" cy="32" r="12" fill="#efb65d"/><circle cx="72" cy="32" r="12" fill="#efb65d"/><ellipse cx="50" cy="53" rx="30" ry="32" fill="#f6c878"/><ellipse cx="50" cy="65" rx="20" ry="14" fill="#fff1cf"/><circle cx="38" cy="48" r="4" fill="#17243d"/><circle cx="62" cy="48" r="4" fill="#17243d"/><path d="M44 59 Q50 55 56 59 L50 65Z" fill="#17243d"/><path d="M50 65 Q44 73 39 68 M50 65 Q56 73 61 68" fill="none" stroke="#17243d" stroke-width="2" stroke-linecap="round"/><path d="M30 81 Q50 90 70 81 L65 93 L35 93Z" fill="#5264df"/></svg>',unsafe_allow_html=True)
+    if st.button('Nasıl yardımcı olabilirim?',key='aslan_toggle',use_container_width=True):
+        s.aslan_open=True
+        st.rerun()
+
+def aslan_reply(prompt):
+    q=prompt.casefold()
+    if s.page in ['Soru bankası','Deneme sınavları'] and s.q<len(QUESTIONS) and any(w in q for w in ['soru','çöz','açıkla','ipucu']):
+        _,question,options,correct,explanation=QUESTIONS[s.q]
+        return 'Bu sorunun çözümü: '+explanation+' Doğru seçenek: '+options[correct]+'.'
+    for _,question,options,correct,explanation in QUESTIONS:
+        if question.casefold().rstrip('?') in q:
+            return explanation+' Doğru cevap: '+options[correct]+'.'
+    if 'tbmm' in q and ('açıl' in q or 'tarih' in q): return 'TBMM, 23 Nisan 1920 tarihinde Ankara’da açılmıştır.'
+    if 'kızılırmak' in q: return 'Kızılırmak, tamamı Türkiye sınırları içinde kalan en uzun akarsudur.'
+    if 'yasama' in q: return 'Anayasa’nın 7. maddesine göre yasama yetkisi TBMM’ye aittir.'
+    if 'çalış' in q or 'program' in q: return f'Bugün {duration(today_seconds())} çalıştın. Günlük hedefin {profile_coach["minutes"]} dakika. Öncelikli tekrar alanın: {focus}.'
+    return 'Bu demo sürümünde yalnızca örnek soruları, bazı temel KPSS bilgilerini ve çalışma verilerini açıklayabiliyorum. Genel yapay zekâ bağlantısı henüz kurulmadı.'
+
+@st.dialog('Aslan · Eğitim asistanı')
+def aslan_dialog():
+    st.caption('Demo asistan · Hazır bilgiler ve basit kurallar kullanır.')
+    if st.button('Canlı koçluk',key='aslan_support'):
+        s.aslan_open=False; s.support_open=True; st.rerun()
+    if st.button('Bu soruyu açıkla',key='aslan_explain',disabled=not(s.page in ['Soru bankası','Deneme sınavları'] and s.q<len(QUESTIONS))):
+        s.aslan_messages.extend([('user','Bu soruyu açıkla'),('assistant',aslan_reply('Bu soruyu açıkla'))])
+    for role,msg in s.aslan_messages[-20:]:
+        with st.chat_message(role): st.write(msg)
+    with st.form('aslan_chat',clear_on_submit=True):
+        prompt=st.text_input('Aslan’a sor')
+        if st.form_submit_button('Gönder') and prompt.strip():
+            s.aslan_messages.extend([('user',prompt.strip()),('assistant',aslan_reply(prompt.strip()))]); st.rerun()
+    if st.button('Kapat',key='aslan_close'):
+        s.aslan_open=False; st.rerun()
+
+@st.dialog('Canlı koçluk · Premium')
+def support_dialog():
+    st.caption('Temsili koçlar ve müsaitlik durumları · Gerçek görüşme yapılmaz.')
+    s.premium_demo=st.checkbox('Premium demo erişimini aç',value=s.premium_demo,key='premium_switch')
+    for name,area,online in [('Matematik koçu','Matematik ve geometri',True),('Genel kültür koçu','Tarih ve coğrafya',True),('Tercih danışmanı','Atama ve tercih süreçleri',False)]:
+        with st.container(border=True):
+            st.markdown('**'+name+'**')
+            st.caption(area+' · '+('🟢 Müsait (demo)' if online else 'Çevrimdışı (demo)'))
+            if st.button('Bağlan' if online else 'Randevu talep et',key='support_'+name,disabled=not s.premium_demo,use_container_width=True):
+                s.support_requests.append(name)
+                st.success('Demo talebi kaydedildi. Gerçek koça iletilmedi.')
+    if st.button('Kapat',key='support_close'):
+        s.support_open=False; st.rerun()
+
+if st.button('Canlı destek · Premium',key='live_support',use_container_width=True):
+    s.support_open=True; s.aslan_open=False; st.rerun()
+if s.support_open: support_dialog()
+elif s.aslan_open: aslan_dialog()
+
