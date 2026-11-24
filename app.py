@@ -1,6 +1,30 @@
 import streamlit as st
 
 st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='wide')
+
+from datetime import datetime, timezone, timedelta
+THEMES = {
+    'Aydınlık': ('#f3f6fc','#ffffff','#17243d','#475569','#5264df','#ffffff','#dce3ef','#e5eaff','#26366c','#dce4ff'),
+    'Koyu': ('#10151f','#202938','#e4eaf5','#aebbd0','#8295ef','#10151f','#39465b','#192337','#263653','#dce4ff'),
+    'Loş ışık': ('#29241c','#3a3225','#f0dfc0','#d0bd9e','#cba46a','#29241c','#63523b','#33291e','#493923','#f0dfc0'),
+    'Kâğıt': ('#f2ebdd','#fbf5e9','#493d2c','#75634a','#8b6937','#ffffff','#d8cbb4','#e8dcc5','#685238','#fff1d7'),
+}
+for key, value in {'appearance_mode':'Aydınlık','appearance_auto':False,'appearance_font':'Normal'}.items():
+    if key not in st.session_state: st.session_state[key]=value
+with st.container(key='appearance_panel'):
+    left, right = st.columns([3,2])
+    with right:
+        with st.popover('Görünüm', use_container_width=True):
+            st.radio('Renk modu', list(THEMES), key='appearance_mode')
+            st.checkbox('Akşamları otomatik loş ışık', key='appearance_auto')
+            st.radio('Yazı boyutu', ['Küçük','Normal','Büyük'], key='appearance_font', horizontal=True)
+            st.caption('Tercihler mevcut oturumda saklanır. Otomatik mod 19.00–07.00 arasında, ekran yenilendiğinde uygulanır.')
+mode=st.session_state.appearance_mode
+hour=datetime.now(timezone(timedelta(hours=3))).hour
+if st.session_state.appearance_auto and (hour>=19 or hour<7): mode='Loş ışık'
+bg,surface,fg,muted,accent,onaccent,border,tint,hero,hero_text=THEMES[mode]
+font_size={'Küçük':14,'Normal':16,'Büyük':18}[st.session_state.appearance_font]
+
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 .stApp {background:#f2f5fa;color:#17243d;color-scheme:light}
@@ -61,6 +85,10 @@ st.markdown("""<style>
 [class*="st-key-nav"] button {border-radius:14px;min-height:48px}.st-key-enter button {min-height:54px;border-radius:16px}.mini-stat{background:white;border:1px solid #e0e6f0;border-radius:18px;padding:16px}.mini-stat small{color:#64748b;font-size:12px}.mini-stat strong{display:block;font:800 25px Manrope,Arial;color:#17243d;margin-top:5px}
 @media(max-width:600px){.orbit-panel{padding:18px;min-height:180px;border-radius:22px}.orbit-copy span{font-size:12px}.welcome{min-height:55vh}.welcome strong{font-size:48px}}
 </style>""",unsafe_allow_html=True)
+theme_css = '\n.stApp {background:radial-gradient(ellipse at 90% 0%,TINT 0%,BG 50%)!important;color:FG!important;color-scheme:SCHEME}\n.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {color:FG!important}\n.stApp p,.stApp label,.stApp h1,.stApp h2,.stApp h3,.stApp h4,.stApp li,.stApp input,.stApp textarea,.brand-name,.mini-stat strong {color:FG!important}\n.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp li {font-size:SIZEpx}\n[data-testid="stCaptionContainer"] p,[data-testid="stWidgetLabel"] p,.mini-stat small,[data-testid="stMetricLabel"] p {color:MUTED!important}\n[data-baseweb="select"] > div,[data-baseweb="input"],[data-baseweb="textarea"],[data-baseweb="popover"],[data-baseweb="menu"],[role="listbox"],[role="option"], [data-testid="stPopoverBody"],[role="dialog"] {background:SURFACE!important;color:FG!important;border-color:BORDER!important}\n[data-baseweb="select"] span,[data-baseweb="select"] input {color:FG!important}\n[data-testid="stExpander"],[data-testid="stMetric"],[data-testid="stVerticalBlockBorderWrapper"],[data-testid="stForm"],.mini-stat,[data-testid="stChatMessage"] {background:SURFACE!important;border-color:BORDER!important;color:FG!important}\n[data-testid="stMetricValue"] {color:ACCENT!important}\n.stButton button,.stFormSubmitButton button,.brand-mark {background:ACCENT!important;color:ONACCENT!important;border-color:transparent!important}\n.stButton button p,.stFormSubmitButton button p {color:inherit!important}\n[class*="st-key-nav"] button,[class*="st-key-menu"] button,[data-testid="stPopoverButton"] {background:SURFACE!important;color:FG!important;border:1px solid BORDER!important}\n[class*="st-key-nav"] button[data-testid="stBaseButton-primary"] {background:ACCENT!important;color:ONACCENT!important}\n[class*="st-key-menu"] button:hover,[class*="st-key-nav"] button:hover {background:TINT!important;color:FG!important}\n.hero,.orbit-panel,.welcome,.study-clock {background:radial-gradient(ellipse at top,HERO,BG 150%)!important;color:HEROTEXT!important}\n.hero small,.hero span,.orbit-copy small,.orbit-copy span,.welcome span,.study-clock div {color:HEROTEXT!important}\n.st-key-aslan_float button {background:HERO!important;color:HEROTEXT!important}\n.st-key-aslan_float button p {color:HEROTEXT!important}\nhr {border-color:BORDER!important}\n'
+for token, value in {"HEROTEXT":hero_text,"ONACCENT":onaccent,"SURFACE":surface,"ACCENT":accent,"BORDER":border,"MUTED":muted,"TINT":tint,"HERO":hero,"SCHEME":"dark" if mode in ("Koyu","Loş ışık") else "light","SIZE":str(font_size),"BG":bg,"FG":fg}.items():
+    theme_css=theme_css.replace(token,value)
+st.markdown("<style>"+theme_css+"</style>",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
 'Matematik':['Temel kavramlar','Sayılar','Bölünebilme','Rasyonel sayılar','Üslü ve köklü sayılar','Denklemler','Oran ve orantı','Problemler','Sayısal mantık','Geometri'],
@@ -365,7 +393,7 @@ elif s.page=='Çalışma takibim':
         sec=int(elapsed(current)) if current else 0
         display=f'{sec//3600:02d}:{sec//60%60:02d}:{sec%60:02d}'
         status='Çalışılıyor' if current and current['start'] is not None else ('Duraklatıldı' if current else 'Başlamaya hazır')
-        st.markdown(f'<div style="background:radial-gradient(ellipse at top,#344c93,#101a38);border-radius:24px;padding:32px 12px;text-align:center;color:white"><div style="font-size:13px;color:#c5d2f5">{status}</div><div style="font:800 clamp(32px,8vw,58px) Manrope,Arial;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin:12px 0">{display}</div><div style="color:#c5d2f5;font-size:13px">Çalışma süresi</div></div>',unsafe_allow_html=True)
+        st.markdown(f'<div class="study-clock" style="background:radial-gradient(ellipse at top,#344c93,#101a38);border-radius:24px;padding:32px 12px;text-align:center;color:white"><div style="font-size:13px;color:#c5d2f5">{status}</div><div style="font:800 clamp(32px,8vw,58px) Manrope,Arial;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin:12px 0">{display}</div><div style="color:#c5d2f5;font-size:13px">Çalışma süresi</div></div>',unsafe_allow_html=True)
         if current:
             a,b=st.columns(2)
             if a.button('Duraklat' if current['start'] is not None else 'Devam et',key='study_pause',use_container_width=True):
@@ -391,11 +419,11 @@ elif s.page=='Çalışma takibim':
     st.subheader('Haftalık çalışma grafiği')
     days=[monday+timedelta(days=i) for i in range(7)]
     frame=pd.DataFrame({'Gün':[d.strftime('%d.%m') for d in days],'Dakika':[round(sum(x['seconds'] for x in week if x['date']==d)/60,2) for d in days]})
-    st.bar_chart(frame,x='Gün',y='Dakika',color='#5264df')
+    st.bar_chart(frame,x='Gün',y='Dakika',color=accent)
     st.subheader('Derslere göre çalışma süresi')
     if week:
         frame=pd.DataFrame({'Ders':list(TOPICS),'Dakika':[round(sum(x['seconds'] for x in week if x['subject']==name)/60,2) for name in TOPICS]})
-        st.bar_chart(frame,x='Ders',y='Dakika',color='#23b5a0')
+        st.bar_chart(frame,x='Ders',y='Dakika',color=accent)
     else: st.info('Grafikler ilk çalışma kaydından sonra dolacak.')
     with st.expander('Çalışma geçmişim'):
         for item in reversed(logs):
@@ -410,14 +438,14 @@ elif s.page=='Çalışma takibim':
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.10 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.11 · Ar-Ge sürümü · Veriler oturumluk')
 
 # Aslan ve canlı koçluk: bağımsız demo bileşenleri.
 st.markdown("""<style>
 .block-container {padding-bottom:120px}
 .st-key-aslan_float {position:fixed;right:22px;bottom:22px;width:210px;z-index:999;}
-.st-key-aslan_float button {background:#17243d!important;color:white!important;border-radius:22px!important;box-shadow:0 8px 30px #17243d33;min-height:58px;}
-.st-key-aslan_float button p {color:white!important;font-size:13px;}
+.st-key-aslan_float button {border-radius:22px!important;box-shadow:0 8px 30px #17243d33;min-height:58px;}
+.st-key-aslan_float button p {font-size:13px;}
 .st-key-aslan_float svg {display:block;margin-left:auto;filter:drop-shadow(0 5px 8px #17243d22)}
 @media(max-width:600px){.st-key-aslan_float{right:12px;bottom:12px;width:185px}}
 </style>""",unsafe_allow_html=True)
