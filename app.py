@@ -2,12 +2,12 @@ import streamlit as st
 
 st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='wide')
 st.markdown("""<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 .stApp {background:#f2f5fa;color:#17243d;color-scheme:light}
 [data-testid="stHeader"] {background:transparent}
 #MainMenu, footer, [data-testid="stToolbar"] {visibility:hidden}
 .block-container {max-width:960px;padding:3rem 2rem 2rem}
-.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp button {font-family:Inter,Arial,sans-serif;color:#17243d}
+.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp button {font-family:Manrope,Arial,sans-serif;color:#17243d}
 .stApp h1,.stApp h2,.stApp h3 {font-family:Manrope,Arial,sans-serif;color:#17243d;letter-spacing:-.045em;font-weight:800}
 .stApp h1 {font-size:2rem}
 [data-testid="stWidgetLabel"] p {font-size:.83rem;font-weight:600;color:#475569}
@@ -33,9 +33,24 @@ st.markdown("""<style>
 @media(max-width:600px) {.block-container {padding:2rem 1rem 1.5rem}.stApp h1 {font-size:1.65rem} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) {flex-wrap:nowrap!important;gap:10px!important} [data-testid="stHorizontalBlock"]:has([class*="st-key-menu"]) > [data-testid="stColumn"] {width:calc(50% - 5px)!important;min-width:0!important;flex:1 1 0!important} [class*="st-key-menu"] button {min-height:100px;padding:12px} [class*="st-key-menu"] button p {font-size:.88rem}}
 
 .hero {background:linear-gradient(125deg,#24346b,#5264df);border-radius:24px;padding:26px;color:white;margin:8px 0 16px;box-shadow:0 12px 30px #26366c22}
-.hero small {color:#dce4ff;font:600 12px Inter,Arial;letter-spacing:1px}.hero strong {display:block;font:800 30px Manrope,Arial;margin:10px 0}.hero span {color:#e5eaff;font:400 14px Inter,Arial}
+.hero small {color:#dce4ff;font:600 12px Manrope,Arial;letter-spacing:1px}.hero strong {display:block;font:800 30px Manrope,Arial;margin:10px 0}.hero span {color:#e5eaff;font:400 14px Manrope,Arial}
 [class*="st-key-nav"] button {background:white;color:#5264df;border:1px solid #dfe5ef;min-height:44px;padding:5px;font-size:12px}
 @media(max-width:600px){[data-testid="stHorizontalBlock"]:has([class*="st-key-nav"]){flex-wrap:nowrap!important;gap:4px!important}[data-testid="stHorizontalBlock"]:has([class*="st-key-nav"]) > [data-testid="stColumn"]{min-width:0!important;flex:1 1 0!important;width:19%!important}[class*="st-key-nav"] button p{font-size:10px!important}[class*="st-key-nav"] button{padding:4px!important}.hero{padding:20px}.hero strong{font-size:25px}}
+
+.stApp {background:#f6f8fc}
+.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp button {font-family:Manrope,Arial,sans-serif}
+.block-container {max-width:820px;padding-top:2.4rem}
+.stApp h1 {font-size:1.8rem;letter-spacing:-.035em}
+.stApp h2,.stApp h3 {font-size:1.15rem;letter-spacing:-.02em}
+.brand {margin-bottom:8px}.brand-name {font-size:27px}.brand-mark {width:38px;height:38px;font-size:21px;border-radius:11px}
+[class*="st-key-nav"] button {min-height:48px;border-radius:10px;color:#475569;background:#fff;box-shadow:none}
+[class*="st-key-nav"] button[data-testid="stBaseButton-primary"] {background:#26366c;color:white;border-color:#26366c}
+[class*="st-key-nav"] button p {font-weight:700;font-size:.82rem}
+[class*="st-key-menu"] button {min-height:84px;border-radius:14px;box-shadow:none;padding:15px}
+[class*="st-key-menu"] button p {font-weight:700;font-size:.95rem}
+.hero {background:#26366c;border-radius:18px;box-shadow:none;padding:22px}
+.hero small {letter-spacing:0;font-size:13px}.hero strong {font-size:26px}
+@media(max-width:600px){.block-container{padding:1.5rem .85rem}.stApp h1{font-size:1.55rem}[class*="st-key-nav"] button p{font-size:10px!important;overflow-wrap:normal;line-height:1.2}[class*="st-key-menu"] button{min-height:84px;padding:10px}[class*="st-key-menu"] button p{font-size:.83rem}.hero{padding:18px}}
 </style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
@@ -43,18 +58,20 @@ TOPICS={
 'Tarih':['İslamiyet öncesi Türk tarihi','Türk-İslam devletleri','Osmanlı tarihi','Osmanlı kültür ve medeniyeti','Kurtuluş Savaşı','Atatürk ilke ve inkılapları','Çağdaş Türk ve dünya tarihi'],
 'Coğrafya':['Coğrafi konum','Yer şekilleri','Dağlar, ovalar ve platolar','Akarsular ve göller','İklim ve bitki örtüsü','Nüfus ve yerleşme','Tarım ve hayvancılık','Madenler ve enerji','Sanayi','Ulaşım ve ticaret','Turizm','Bölgeler coğrafyası'],
 'Vatandaşlık':['Hukukun temel kavramları','Anayasa hukuku','Temel hak ve özgürlükler','Yasama','Yürütme','Yargı','İdare hukuku'],
-'Güncel Bilgiler':['Türkiye ve dünya gündemi','Kültür ve sanat','Bilim ve teknoloji']}
+'Güncel bilgiler':['Türkiye ve dünya gündemi','Kültür ve sanat','Bilim ve teknoloji']}
 QUESTIONS=[('Coğrafya','Tamamı Türkiye sınırları içinde kalan en uzun akarsu hangisidir?',['Fırat','Dicle','Kızılırmak','Sakarya','Yeşilırmak'],2,'Kızılırmak tamamen Türkiye sınırları içinde akar.'),('Tarih','Türkiye Büyük Millet Meclisi hangi tarihte açılmıştır?',['19 Mayıs 1919','23 Nisan 1920','29 Ekim 1923','30 Ağustos 1922','24 Temmuz 1923'],1,'TBMM 23 Nisan 1920 tarihinde Ankara’da açılmıştır.'),('Matematik','Bir sayının yüzde 25’i 15 ise sayı kaçtır?',['30','45','50','60','75'],3,'15 / 0,25 = 60.'),('Türkçe','Hangisi eş anlamlı bir sözcük çiftidir?',['Gece – gündüz','Az – çok','Uzak – yakın','Kara – siyah','İleri – geri'],3,'Kara ve siyah renk anlamında eş anlamlıdır.'),('Vatandaşlık','Türkiye’de yasama yetkisi hangi organa aittir?',['Danıştay','Yargıtay','TBMM','Sayıştay','Anayasa Mahkemesi'],2,'Anayasa’nın 7. maddesine göre yasama yetkisi TBMM’ye aittir.')]
-for k,v in {'page':'Ana Sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},'wrong':{},'retry':0,'practice':0}.items():
+for k,v in {'page':'Ana sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},'wrong':{},'retry':0,'practice':0}.items():
     if k not in st.session_state: st.session_state[k]=v
 s=st.session_state
+legacy_pages={'Ana Sayfa': 'Ana sayfa', 'Soru Bankası': 'Soru bankası', 'Deneme Sınavları': 'Deneme sınavları', 'Konu Listeleri': 'Konu listeleri', 'Kendi Notlarım': 'Kendi notlarım', 'Yanlış Soru Defterim': 'Yanlış soru defterim', 'Coğrafya Atlası': 'Coğrafya atlası', 'Bilgi Kartları': 'Bilgi kartları', 'Çalışma Takibim': 'Çalışma takibim', 'Akıllı Koç': 'Akıllı koç', 'Akıllı KPSS Koçu': 'Akıllı KPSS koçu', 'Kariyer ve Atama Merkezi': 'Kariyer ve atama merkezi', 'Alım Haberleri': 'Alım haberleri', 'Kişisel Alım Radarı': 'Kişisel alım radarı', 'Tercih Danışmanlığı': 'Tercih danışmanlığı', 'Geçmiş Puanlar': 'Geçmiş puanlar', 'Başvuru Takvimim': 'Başvuru takvimim', 'Kaydedilen İlanlar': 'Kaydedilen ilanlar', 'Atama Radarı': 'Atama radarı', 'Güncel Bilgiler': 'Güncel bilgiler', 'Ön Lisans': 'Ön lisans', 'KİŞİSEL ÇALIŞMA PLANI': 'Kişisel çalışma planı', 'V0.6': 'V0.7'}
+if s.page in legacy_pages: s.page=legacy_pages[s.page]
 st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS.</div></div>',unsafe_allow_html=True)
-level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön Lisans','Lisans'],key='level')
+level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön lisans','Lisans'],key='level')
 def go(page):
     s.page=page
-    if page in ['Soru Bankası','Deneme Sınavları']: s.q=0
-    if page=='Deneme Sınavları': s.exam+=1
-    if page=='Soru Bankası': s.practice+=1
+    if page in ['Soru bankası','Deneme sınavları']: s.q=0
+    if page=='Deneme sınavları': s.exam+=1
+    if page=='Soru bankası': s.practice+=1
     st.rerun()
 from datetime import date
 if 'coach_profiles' not in s: s.coach_profiles={}
@@ -72,13 +89,14 @@ results=stats()
 weak=sorted([name for name,vals in results.items() if vals],key=lambda name:sum(results[name])/len(results[name]))
 focus=weak[0] if weak else 'Türkçe'
 unknown=next((name for name,vals in results.items() if not vals),focus)
-nav=[('Bugün','Ana Sayfa'),('Dersler','Dersler'),('Koçum','Akıllı Koç'),('Kariyer','Kariyer ve Atama Merkezi'),('Profil','Profil')]
+nav=[('Ana sayfa','Ana sayfa'),('Eğitim','Dersler'),('Akıllı koç','Akıllı koç'),('Kariyer','Kariyer ve atama merkezi'),('Profil','Profil')]
+active_page = s.page if s.page in [p for _,p in nav] else ('Akıllı koç' if s.page=='Bilgi DNA’m' else 'Dersler')
 for i,(col,(label,page)) in enumerate(zip(st.columns(5),nav)):
     with col:
-        if st.button(label,key=f'nav{i}',use_container_width=True): go(page)
-if s.page=='Ana Sayfa':
+        if st.button(label,key=f'nav{i}',type='primary' if active_page==page else 'secondary',use_container_width=True): go(page)
+if s.page=='Ana sayfa':
     st.title('Bugünkü programın')
-    st.markdown(f'<div class="hero"><small>KİŞİSEL ÇALIŞMA PLANI</small><strong>Hedef: {profile_coach["target"]} puan</strong><span>{profile_coach["minutes"]} dakika · {focus} odaklı çalışma</span></div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="hero"><small>Kişisel çalışma planı</small><strong>Hedef: {profile_coach["target"]} puan</strong><span>{profile_coach["minutes"]} dakika · {focus} odaklı çalışma</span></div>',unsafe_allow_html=True)
     tasks=[f'{focus} · {profile_coach["minutes"]//3} dakika konu tekrarı',f'{unknown} · örnek soru çözümü','Yanlış soruları ve notları gözden geçir']
     daykey=(level,date.today().isoformat())
     completed=s.daily_tasks.setdefault(daykey,{})
@@ -86,17 +104,11 @@ if s.page=='Ana Sayfa':
         completed[task]=st.checkbox(task,value=completed.get(task,False),key=f'daily_{daykey}_{task}')
     count=sum(bool(completed.get(task)) for task in tasks)
     st.progress(count/len(tasks),text=f'{count}/{len(tasks)} görev tamamlandı')
-    if st.button('Çalışmaya başla',use_container_width=True): go('Soru Bankası')
-    a,b=st.columns(2)
-    with a:
-        if st.button('Akıllı Koç',icon=':material/psychology:',key='menu10',use_container_width=True): go('Akıllı Koç')
-    with b:
-        if st.button('Bilgi DNA’m',icon=':material/monitoring:',key='menu11',use_container_width=True): go('Bilgi DNA’m')
-    if st.button('Atama Radarı',use_container_width=True): go('Kariyer ve Atama Merkezi')
-    st.caption('Görevler örnek çalışma önerileridir; tamamlanma durumunu sen işaretlersin.')
+    if st.button('Çalışmaya başla',use_container_width=True): go('Soru bankası')
+    st.caption('Örnek çalışma planı · Görevleri tamamladıkça işaretle.')
 elif s.page=='Dersler':
-    st.title('Çalışma alanın')
-    modules=[('menu_book','Konu Listeleri'),('quiz','Soru Bankası'),('edit_note','Kendi Notlarım'),('assignment_late','Yanlış Soru Defterim'),('public','Coğrafya Atlası'),('timer','Deneme Sınavları'),('style','Bilgi Kartları'),('monitoring','Çalışma Takibim')]
+    st.title('Eğitim')
+    modules=[('menu_book','Konu listeleri'),('quiz','Soru bankası'),('edit_note','Kendi notlarım'),('assignment_late','Yanlış soru defterim'),('public','Coğrafya atlası'),('timer','Deneme sınavları'),('style','Bilgi kartları'),('monitoring','Çalışma takibim')]
     for i in range(0,len(modules),2):
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
@@ -109,8 +121,8 @@ elif s.page=='Profil':
         if st.form_submit_button('Profili kaydet'):
             s.coach_profiles[level]={'target':target,'minutes':minutes}; st.rerun()
     st.caption('Profil yalnızca bu oturumda saklanır.')
-elif s.page=='Akıllı Koç':
-    st.title('Akıllı KPSS Koçu')
+elif s.page=='Akıllı koç':
+    st.title('Akıllı KPSS koçu')
     st.caption('Kural tabanlı Ar-Ge prototipi · Yapay zekâ bağlantısı yok.')
     if not weak: st.info('Henüz performans verin yok. Önce örnek soruları çözerek başlayabilirsin.')
     else:
@@ -119,7 +131,7 @@ elif s.page=='Akıllı Koç':
         st.write(f'Bu derste {len(vals)} cevapta {sum(vals)} doğru kaydedildi. Daha fazla soru çözerek ölçümü güçlendir.')
     st.write(f'Günlük hedefin: {profile_coach["minutes"]} dakika. Henüz ölçülmemiş ders: {unknown}.' if not results[unknown] else f'Günlük hedefin: {profile_coach["minutes"]} dakika.')
     if st.button('Bilgi DNA’mı incele'): go('Bilgi DNA’m')
-    if st.button('Soru çözmeye başla'): go('Soru Bankası')
+    if st.button('Soru çözmeye başla'): go('Soru bankası')
 elif s.page=='Bilgi DNA’m':
     st.title('Bilgi DNA’m')
     st.caption('Gerçek oturum cevaplarından hesaplanan başarı oranı; konu hâkimiyeti veya KPSS puan tahmini değildir.')
@@ -130,19 +142,19 @@ elif s.page=='Bilgi DNA’m':
                 rate=sum(vals)/len(vals)
                 st.progress(rate,text=f'%{round(rate*100)} doğru · {len(vals)} cevap')
             else: st.caption('Henüz ölçülmedi')
-    if st.button('Koç önerilerime dön'): go('Akıllı Koç')
-elif s.page=='Kariyer ve Atama Merkezi':
-    st.title('Kariyer ve Atama Merkezi')
+    if st.button('Koç önerilerime dön'): go('Akıllı koç')
+elif s.page=='Kariyer ve atama merkezi':
+    st.title('Kariyer ve atama merkezi')
     st.caption('Ar-Ge demosu · Aşağıdaki ilanlar ve puanlar tamamen kurgusaldır.')
     if 'career_saved' not in s: s.career_saved=[]
     if 'career_profile' not in s: s.career_profile={}
     profile=s.career_profile.get(level,{})
     listings=[
         dict(id=1,title='Örnek büro personeli',level='Lisans',city='Ankara',score=70,department='İşletme',kind='Sözleşmeli personel',past=82),
-        dict(id=2,title='Örnek memur',level='Ön Lisans',city='Elazığ',score=65,department='Tüm bölümler',kind='Memur',past=76),
+        dict(id=2,title='Örnek memur',level='Ön lisans',city='Elazığ',score=65,department='Tüm bölümler',kind='Memur',past=76),
         dict(id=3,title='Örnek destek personeli',level='Ortaöğretim',city='Malatya',score=60,department='Tüm bölümler',kind='Sözleşmeli personel',past=72),
         dict(id=4,title='Örnek idari personel',level='Lisans',city='İstanbul',score=75,department='Tüm bölümler',kind='Memur',past=85)]
-    section=st.radio('Bölüm',['Alım Haberleri','Kişisel Alım Radarı','Tercih Danışmanlığı','Geçmiş Puanlar','Başvuru Takvimim','Kaydedilen İlanlar'],key='career_section')
+    section=st.radio('Bölüm',['Alım haberleri','Kişisel alım radarı','Tercih danışmanlığı','Geçmiş puanlar','Başvuru takvimim','Kaydedilen ilanlar'],key='career_section')
     def matches(item):
         return bool(profile) and item['level']==level and item['score']<=profile['score'] and (profile['city']=='Tüm Türkiye' or item['city']==profile['city']) and (item['department']=='Tüm bölümler' or item['department'].casefold()==profile['department'].strip().casefold()) and item['kind'] in profile['kinds']
     def show_listing(item):
@@ -156,10 +168,10 @@ elif s.page=='Kariyer ve Atama Merkezi':
                 if saved: s.career_saved.remove(item['id'])
                 else: s.career_saved.append(item['id'])
                 st.rerun()
-    if section=='Alım Haberleri':
+    if section=='Alım haberleri':
         for item in listings: show_listing(item)
         st.markdown('Resmî kaynaklar: [ÖSYM](https://www.osym.gov.tr/) · [Kariyer Kapısı](https://kariyerkapisi.gov.tr/) · [Resmî Gazete](https://www.resmigazete.gov.tr/)')
-    elif section=='Kişisel Alım Radarı':
+    elif section=='Kişisel alım radarı':
         with st.form('radar_'+level):
             department=st.text_input('Mezuniyet bölümü',value=profile.get('department',''))
             score=st.number_input('KPSS puanı',min_value=0.0,max_value=100.0,value=float(profile.get('score',75)))
@@ -174,9 +186,9 @@ elif s.page=='Kariyer ve Atama Merkezi':
         found=[item for item in listings if matches(item)]
         st.metric('Eşleşen örnek ilan',len(found))
         for item in found: show_listing(item)
-    elif section=='Tercih Danışmanlığı':
+    elif section=='Tercih danışmanlığı':
         st.info('Örnek puan karşılaştırmasıdır; atanma olasılığı veya garantisi değildir.')
-        if not profile: st.warning('Önce Kişisel Alım Radarı bölümünde profilini oluştur.')
+        if not profile: st.warning('Önce Kişisel alım radarı bölümünde profilini oluştur.')
         else:
             found=[item for item in listings if matches(item)]
             if not found: st.write('Filtrelerine uygun örnek kadro yok.')
@@ -187,10 +199,10 @@ elif s.page=='Kariyer ve Atama Merkezi':
                     st.metric('Kurgusal geçmiş puana göre fark',f'{diff:+.1f}')
                     st.write('Geçmiş örnek puanın üzerinde' if diff>=0 else 'Geçmiş örnek puanın altında')
         st.caption('Gerçek danışmanlıkta puan türü, nitelik kodları ve resmî kılavuz doğrulanmalıdır.')
-    elif section=='Geçmiş Puanlar':
+    elif section=='Geçmiş puanlar':
         for item in listings:
             if item['level']==level: st.metric(item['title']+' · Kurgusal geçmiş puan',item['past'])
-    elif section=='Başvuru Takvimim':
+    elif section=='Başvuru takvimim':
         if 'career_dates' not in s: s.career_dates=[]
         with st.form('career_date'):
             title=st.text_input('Başvuru / hatırlatma adı')
@@ -206,8 +218,8 @@ elif s.page=='Kariyer ve Atama Merkezi':
         if not s.career_saved: st.info('Henüz kayıtlı ilan yok.')
         for item in listings:
             if item['id'] in s.career_saved: show_listing(item)
-elif s.page=='Konu Listeleri':
-    st.title('Konu Listeleri')
+elif s.page=='Konu listeleri':
+    st.title('Konu listeleri')
     subject=st.selectbox('Ders seç',list(TOPICS))
     topics=TOPICS[subject]
     for topic in topics:
@@ -217,9 +229,9 @@ elif s.page=='Konu Listeleri':
     count=sum(s.done.get(f'{level}|{subject}|{t}',False) for t in topics)
     st.progress(count/len(topics),text=f'{count}/{len(topics)} konu tamamlandı')
     st.caption('Örnek konu listesi; resmî müfredat doğrulaması henüz yapılmadı.')
-elif s.page in ['Soru Bankası','Deneme Sınavları']:
+elif s.page in ['Soru bankası','Deneme sınavları']:
     st.title(s.page)
-    exam=s.page=='Deneme Sınavları'
+    exam=s.page=='Deneme sınavları'
     st.caption('5 soruluk mini deneme (süresiz)' if exam else 'Özgün örnek sorular')
     if s.q>=len(QUESTIONS):
         st.success('Sorular tamamlandı!')
@@ -239,8 +251,8 @@ elif s.page in ['Soru Bankası','Deneme Sınavları']:
             else: st.error('Yanlış cevap. Doğru seçenek: '+options[correct])
             st.info(explanation)
             if st.button('Sonraki soru'): s.q+=1; st.rerun()
-elif s.page=='Kendi Notlarım':
-    st.title('Kendi Notlarım')
+elif s.page=='Kendi notlarım':
+    st.title('Kendi notlarım')
     subject=st.selectbox('Ders',list(TOPICS),key='note_subject')
     topic=st.radio('Konular',TOPICS[subject],key='note_topic_'+subject)
     nk=(level,subject,topic)
@@ -261,8 +273,8 @@ elif s.page=='Kendi Notlarım':
         if st.form_submit_button('Not ekle') and note.strip():
             s.notes.setdefault(nk,[]).append(note.strip()); st.rerun()
     st.caption('Notlar bu oturumda saklanır.')
-elif s.page=='Yanlış Soru Defterim':
-    st.title('Yanlış Soru Defterim')
+elif s.page=='Yanlış soru defterim':
+    st.title('Yanlış soru defterim')
     ids=[i for (lev,i) in s.wrong if lev==level]
     st.metric('Tekrar edilecek soru',len(ids))
     subject=st.selectbox('Ders',['Tümü']+list(TOPICS),key='wrong_subject')
@@ -278,8 +290,8 @@ elif s.page=='Yanlış Soru Defterim':
                 else: st.error('Doğru cevap: '+options[correct]+'. '+explanation)
             if st.button('Öğrendim, defterden çıkar',key=f'remove_{level}_{i}'):
                 del s.wrong[(level,i)]; s.retry+=1; st.rerun()
-elif s.page=='Coğrafya Atlası':
-    st.title('Coğrafya Atlası')
+elif s.page=='Coğrafya atlası':
+    st.title('Coğrafya atlası')
     places={'Akarsular':{'Kızılırmak':(40.0,34.0,'Tamamı Türkiye sınırları içinde kalan en uzun akarsu.'),'Fırat':(38.7,39.0,'Doğu Anadolu’dan doğar, Basra Körfezi havzasına ulaşır.')},'Göller':{'Van Gölü':(38.6,42.9,'Türkiye’nin yüzölçümü en büyük gölü.'),'Tuz Gölü':(38.75,33.4,'İç Anadolu’da bulunan tuzlu göl.')},'Dağlar':{'Ağrı Dağı':(39.7,44.3,'Türkiye’nin en yüksek dağı.'),'Erciyes':(38.53,35.45,'Kayseri’de bulunan volkanik dağ.')}}
     category=st.selectbox('Harita katmanı',list(places))
     items=places[category]
@@ -287,12 +299,12 @@ elif s.page=='Coğrafya Atlası':
     name=st.selectbox('Coğrafi unsur',list(items))
     st.info(items[name][2])
     st.caption('Yaklaşık konum işaretleri. Fiziki harita ve akarsu çizgileri henüz yok.')
-elif s.page=='Bilgi Kartları':
-    st.title('Bilgi Kartları')
+elif s.page=='Bilgi kartları':
+    st.title('Bilgi kartları')
     for subject,question,options,correct,explanation in QUESTIONS:
         with st.expander(subject+' · '+question): st.write(options[correct]); st.write(explanation)
 else:
-    st.title('Çalışma Takibim')
+    st.title('Çalışma takibim')
     answers=[v for k,v in s.answers.items() if k.startswith(level+'|')]
     correct=sum(v[0] for v in answers)
     a,b=st.columns(2); a.metric('Doğru',correct); b.metric('Yanlış',len(answers)-correct)
@@ -300,4 +312,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.6 · Oturumluk demo')
+st.caption('V0.7 · Ar-Ge sürümü · Veriler oturumluk')
