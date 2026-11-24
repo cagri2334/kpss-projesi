@@ -15,7 +15,8 @@ QUESTIONS=[('Coğrafya','Tamamı Türkiye sınırları içinde kalan en uzun aka
 for k,v in {'page':'Ana Sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},'wrong':{},'retry':0,'practice':0}.items():
     if k not in st.session_state: st.session_state[k]=v
 s=st.session_state
-st.title('KPSS') if s.page=='Ana Sayfa' else None
+if s.page == 'Ana Sayfa':
+    st.title('KPSS')
 level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön Lisans','Lisans'],key='level')
 def go(page):
     s.page=page
