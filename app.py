@@ -51,6 +51,15 @@ st.markdown("""<style>
 .hero {background:#26366c;border-radius:18px;box-shadow:none;padding:22px}
 .hero small {letter-spacing:0;font-size:13px}.hero strong {font-size:26px}
 @media(max-width:600px){.block-container{padding:1.5rem .85rem}.stApp h1{font-size:1.55rem}[class*="st-key-nav"] button p{font-size:10px!important;overflow-wrap:normal;line-height:1.2}[class*="st-key-menu"] button{min-height:84px;padding:10px}[class*="st-key-menu"] button p{font-size:.83rem}.hero{padding:18px}}
+
+.stApp {background:radial-gradient(ellipse at 90% 0%,#e5eaff 0%,#f7f9fc 45%);}
+.block-container {max-width:900px;padding-top:2rem}
+.orbit-panel {background:radial-gradient(ellipse at 75% 30%,#344c93,#101a38 70%);border-radius:28px;padding:28px;color:#fff;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:230px;box-shadow:0 16px 40px #17243d20}
+.orbit-copy {flex:1;min-width:0}.orbit-copy small {color:#b9c9f5;font-size:12px}.orbit-copy strong {display:block;font:800 clamp(26px,5vw,40px) Manrope,Arial;letter-spacing:-1.5px;line-height:1.12;margin:12px 0}.orbit-copy span {color:#d9e4ff;font-size:14px}.orbit-art {width:46%;max-width:280px;flex-shrink:0}.orbit-dot {transform-origin:150px 150px;animation:orbit-spin 18s linear infinite}@keyframes orbit-spin {to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.orbit-dot{animation:none}}
+.welcome {min-height:58vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 40%,#354b92,#101a38 72%);border-radius:30px;color:white;padding:24px}.welcome .orbit-art{width:240px;max-width:85%}.welcome strong{font:800 58px Manrope,Arial;letter-spacing:-4px}.welcome span{color:#c5d2f5;font-size:15px;margin-top:8px}
+[class*="st-key-nav"] button {border-radius:14px;min-height:48px}.st-key-enter button {min-height:54px;border-radius:16px}.mini-stat{background:white;border:1px solid #e0e6f0;border-radius:18px;padding:16px}.mini-stat small{color:#64748b;font-size:12px}.mini-stat strong{display:block;font:800 25px Manrope,Arial;color:#17243d;margin-top:5px}
+@media(max-width:600px){.orbit-panel{padding:18px;min-height:180px;border-radius:22px}.orbit-copy span{font-size:12px}.welcome{min-height:55vh}.welcome strong{font-size:48px}}
 </style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
@@ -63,8 +72,18 @@ QUESTIONS=[('Coğrafya','Tamamı Türkiye sınırları içinde kalan en uzun aka
 for k,v in {'page':'Ana sayfa','done':{},'answers':{},'q':0,'exam':0,'notes':{},'wrong':{},'retry':0,'practice':0}.items():
     if k not in st.session_state: st.session_state[k]=v
 s=st.session_state
-legacy_pages={'Ana Sayfa': 'Ana sayfa', 'Soru Bankası': 'Soru bankası', 'Deneme Sınavları': 'Deneme sınavları', 'Konu Listeleri': 'Konu listeleri', 'Kendi Notlarım': 'Kendi notlarım', 'Yanlış Soru Defterim': 'Yanlış soru defterim', 'Coğrafya Atlası': 'Coğrafya atlası', 'Bilgi Kartları': 'Bilgi kartları', 'Çalışma Takibim': 'Çalışma takibim', 'Akıllı Koç': 'Akıllı koç', 'Akıllı KPSS Koçu': 'Akıllı KPSS koçu', 'Kariyer ve Atama Merkezi': 'Kariyer ve atama merkezi', 'Alım Haberleri': 'Alım haberleri', 'Kişisel Alım Radarı': 'Kişisel alım radarı', 'Tercih Danışmanlığı': 'Tercih danışmanlığı', 'Geçmiş Puanlar': 'Geçmiş puanlar', 'Başvuru Takvimim': 'Başvuru takvimim', 'Kaydedilen İlanlar': 'Kaydedilen ilanlar', 'Atama Radarı': 'Atama radarı', 'Güncel Bilgiler': 'Güncel bilgiler', 'Ön Lisans': 'Ön lisans', 'KİŞİSEL ÇALIŞMA PLANI': 'Kişisel çalışma planı', 'V0.6': 'V0.7'}
+legacy_pages={'Ana Sayfa': 'Ana sayfa', 'Soru Bankası': 'Soru bankası', 'Deneme Sınavları': 'Deneme sınavları', 'Konu Listeleri': 'Konu listeleri', 'Kendi Notlarım': 'Kendi notlarım', 'Yanlış Soru Defterim': 'Yanlış soru defterim', 'Coğrafya Atlası': 'Coğrafya atlası', 'Bilgi Kartları': 'Bilgi kartları', 'Çalışma Takibim': 'Çalışma takibim', 'Akıllı Koç': 'Akıllı koç', 'Akıllı KPSS Koçu': 'Akıllı KPSS koçu', 'Kariyer ve Atama Merkezi': 'Kariyer ve atama merkezi', 'Alım Haberleri': 'Alım haberleri', 'Kişisel Alım Radarı': 'Kişisel alım radarı', 'Tercih Danışmanlığı': 'Tercih danışmanlığı', 'Geçmiş Puanlar': 'Geçmiş puanlar', 'Başvuru Takvimim': 'Başvuru takvimim', 'Kaydedilen İlanlar': 'Kaydedilen ilanlar', 'Atama Radarı': 'Atama radarı', 'Güncel Bilgiler': 'Güncel bilgiler', 'Ön Lisans': 'Ön lisans', 'KİŞİSEL ÇALIŞMA PLANI': 'Kişisel çalışma planı', 'V0.6': 'V0.8'}
 if s.page in legacy_pages: s.page=legacy_pages[s.page]
+def orbit(value=None):
+    label='—' if value is None else f'%{value}'
+    arc=0 if value is None else 2.82743*value
+    return f'''<svg class="orbit-art" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Örnek cevap başarı göstergesi"><defs><radialGradient id="halo"><stop stop-color="#849cff" stop-opacity=".45"/><stop offset="1" stop-color="#849cff" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="150" r="145" fill="url(#halo)"/><g fill="none" stroke="#9db4ff" stroke-opacity=".4"><circle cx="150" cy="150" r="125" stroke-dasharray="2 7"/><ellipse cx="150" cy="150" rx="135" ry="65" transform="rotate(-35 150 150)"/><ellipse cx="150" cy="150" rx="135" ry="65" transform="rotate(35 150 150)"/></g><circle cx="150" cy="150" r="45" fill="none" stroke="#7288c9" stroke-width="6"/><circle cx="150" cy="150" r="45" fill="none" stroke="#9af2da" stroke-width="6" stroke-dasharray="{arc} 283" transform="rotate(-90 150 150)" stroke-linecap="round"/><g class="orbit-dot"><circle cx="150" cy="25" r="6" fill="#9af2da"/><circle cx="150" cy="275" r="4" fill="#aebfff"/></g><text x="150" y="157" text-anchor="middle" fill="white" font-size="25" font-weight="700">{label}</text></svg>'''
+if not s.get('entered_v08',False):
+    st.markdown(f'<div class="welcome">{orbit()}<strong>KPSS.</strong><span>Kişisel eğitim ve kariyer asistanı</span></div>',unsafe_allow_html=True)
+    if st.button('Uygulamaya giriş',key='enter',use_container_width=True):
+        s.entered_v08=True
+        st.rerun()
+    st.stop()
 st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS.</div></div>',unsafe_allow_html=True)
 level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön lisans','Lisans'],key='level')
 def go(page):
@@ -95,8 +114,14 @@ for i,(col,(label,page)) in enumerate(zip(st.columns(5),nav)):
     with col:
         if st.button(label,key=f'nav{i}',type='primary' if active_page==page else 'secondary',use_container_width=True): go(page)
 if s.page=='Ana sayfa':
-    st.title('Bugünkü programın')
-    st.markdown(f'<div class="hero"><small>Kişisel çalışma planı</small><strong>Hedef: {profile_coach["target"]} puan</strong><span>{profile_coach["minutes"]} dakika · {focus} odaklı çalışma</span></div>',unsafe_allow_html=True)
+    all_answers=[v for vals in results.values() for v in vals]
+    rate=round(100*sum(all_answers)/len(all_answers)) if all_answers else None
+    st.markdown(f'<div class="orbit-panel"><div class="orbit-copy"><small>Dijital öğrenci ikizin</small><strong>Hedefin: {profile_coach["target"]} puan</strong><span>{"Henüz cevap verisi yok" if rate is None else "Örnek sorulardaki doğru cevap oranı"}</span></div>{orbit(rate)}</div>',unsafe_allow_html=True)
+    a,b=st.columns(2)
+    a.metric('Çözülen soru',len(all_answers))
+    b.metric('Ölçülen ders',sum(bool(v) for v in results.values()))
+    if st.button('Dijital profilimi incele',use_container_width=True): go('Bilgi DNA’m')
+    st.subheader('Bugünkü programın')
     tasks=[f'{focus} · {profile_coach["minutes"]//3} dakika konu tekrarı',f'{unknown} · örnek soru çözümü','Yanlış soruları ve notları gözden geçir']
     daykey=(level,date.today().isoformat())
     completed=s.daily_tasks.setdefault(daykey,{})
@@ -133,7 +158,10 @@ elif s.page=='Akıllı koç':
     if st.button('Bilgi DNA’mı incele'): go('Bilgi DNA’m')
     if st.button('Soru çözmeye başla'): go('Soru bankası')
 elif s.page=='Bilgi DNA’m':
-    st.title('Bilgi DNA’m')
+    st.title('Dijital öğrenci ikizim')
+    all_answers=[v for vals in results.values() for v in vals]
+    rate=round(100*sum(all_answers)/len(all_answers)) if all_answers else None
+    st.markdown(f'<div class="orbit-panel"><div class="orbit-copy"><small>Bilgi DNA’m</small><strong>Öğrenme profilin</strong><span>{len(all_answers)} örnek cevap · Başarı oranı</span></div>{orbit(rate)}</div>',unsafe_allow_html=True)
     st.caption('Gerçek oturum cevaplarından hesaplanan başarı oranı; konu hâkimiyeti veya KPSS puan tahmini değildir.')
     for name,vals in results.items():
         with st.container(border=True):
@@ -312,4 +340,4 @@ else:
     if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
     st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.7 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.8 · Ar-Ge sürümü · Veriler oturumluk')
