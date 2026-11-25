@@ -178,7 +178,7 @@ if s.page=='Ana sayfa':
     c.metric('Hedef puan',profile_coach['target'])
     for i, pair in enumerate([ [('Odaklanma odası','Odaklanma odası'),('Memuriyet yolculuğum','Memuriyet yolculuğum')], [('Akıllı koç','Akıllı koç'),('Atama radarı','Kariyer ve atama merkezi')] ]):
         for j,(col,(label,page)) in enumerate(zip(st.columns(2),pair)):
-            if col.button(label,key=f'menu_home_{i}_{j}',use_container_width=True): go(page)
+            col.button(label,key=f'menu_home_{i}_{j}',use_container_width=True,on_click=lambda dest=page: setattr(st.session_state,'page',dest))
     if st.button('Dijital profilimi incele',use_container_width=True): go('Bilgi DNA’m')
     st.subheader('Bugünkü programın')
     tasks=[f'{focus} · {profile_coach["minutes"]//3} dakika konu tekrarı',f'{unknown} · örnek soru çözümü','Yanlış soruları ve notları gözden geçir']
@@ -199,6 +199,7 @@ elif s.page=='Dersler':
         for j,(col,(icon,name)) in enumerate(zip(st.columns(2),modules[i:i+2])):
             with col:
                 if st.button(name,icon=f':material/{icon}:',use_container_width=True,key=f'menu{i+j}'): go(name)
+    st.button('Odaklanma odası',key='education_room',use_container_width=True,on_click=lambda: setattr(st.session_state,'page','Odaklanma odası'))
 elif s.page=='Profil':
     st.title('Çalışma profilim')
     with st.form('coach_profile_'+level):
@@ -409,13 +410,10 @@ elif s.page in ['Çalışma takibim','Odaklanma odası']:
     room=s.page=='Odaklanma odası'
     st.title(s.page)
     if room:
-        scene=st.radio('Çalışma atmosferi',['Yağmurlu pencere','Kütüphane','Gece'],horizontal=True,key='room_scene')
-        cls={'Yağmurlu pencere':'rain','Kütüphane':'library','Gece':'night'}[scene]
-        art={'rain':'<path d="M30 0V180 M100 0V180 M170 0V180 M240 0V180 M0 90H300" stroke="#b9d5e5" stroke-width="3"/><path d="M45 10l-12 24 M130 30l-12 24 M210 65l-12 24 M270 10l-12 24" stroke="white"/>','library':'<path d="M0 60H300 M0 120H300 M30 10V60 M45 20V60 M90 5V60 M180 10V60 M210 20V60 M70 70V120 M230 70V120" stroke="#e7c49a" stroke-width="8"/>','night':'<circle cx="230" cy="45" r="26" fill="#e8e3c7"/><circle cx="70" cy="30" r="2" fill="white"/><circle cx="130" cy="80" r="3" fill="white"/>'}[cls]
-        st.markdown(f'<div class="focus-scene {cls}"><svg viewBox="0 0 300 180" preserveAspectRatio="xMidYMid slice">{art}</svg><strong>{scene}</strong></div>',unsafe_allow_html=True)
-        quiet=st.checkbox('Sade odaklanma görünümü',key='room_quiet')
-        if quiet: st.markdown('<style>[class*="st-key-nav"],.st-key-aslan_float,.st-key-live_support,.st-key-appearance_panel,.brand{display:none!important}</style>',unsafe_allow_html=True)
-        if st.button('Çalışma takibine dön'): go('Çalışma takibim')
+        st.caption('Dersini seç, kronometreni başlat ve çalışmaya odaklan.')
+        if st.button('Ana sayfaya dön',key='room_home'): go('Ana sayfa')
+        if st.button('Çalışma takibine dön',key='room_tracking'): go('Çalışma takibim')
+        quiet=st.checkbox('Grafikleri gizle',key='room_quiet',value=False)
 
     timer=s.study_timer
     if timer is None:
@@ -447,38 +445,39 @@ elif s.page in ['Çalışma takibim','Odaklanma odası']:
                 s.study_timer=None
                 st.rerun()
     clock()
-    if room and quiet: st.stop()
-    logs=[x for x in s.study_logs if x['level']==level]
-    today=study_day(); monday=today-timedelta(days=today.weekday())
-    week=[x for x in logs if monday<=x['date']<=today]
-    a,b=st.columns(2)
-    a.metric('Bugün',duration(today_seconds()))
-    b.metric('Bu hafta',duration(sum(x['seconds'] for x in week)))
-    target=profile_coach['minutes']*60
-    st.progress(min(1.0,today_seconds()/target),text=f'Günlük hedef: {profile_coach["minutes"]} dakika')
-    st.subheader('Haftalık çalışma grafiği')
-    days=[monday+timedelta(days=i) for i in range(7)]
-    frame=pd.DataFrame({'Gün':[d.strftime('%d.%m') for d in days],'Dakika':[round(sum(x['seconds'] for x in week if x['date']==d)/60,2) for d in days]})
-    st.bar_chart(frame,x='Gün',y='Dakika',color=accent)
-    st.subheader('Derslere göre çalışma süresi')
-    if week:
-        frame=pd.DataFrame({'Ders':list(TOPICS),'Dakika':[round(sum(x['seconds'] for x in week if x['subject']==name)/60,2) for name in TOPICS]})
-        st.bar_chart(frame,x='Ders',y='Dakika',color=accent)
-    else: st.info('Grafikler ilk çalışma kaydından sonra dolacak.')
-    with st.expander('Çalışma geçmişim'):
-        for item in reversed(logs):
-            st.write(f"{item['date']:%d.%m.%Y} · {item['subject']} · {item['topic']} · {int(item['seconds'])//60} dk. {int(item['seconds'])%60} sn.")
-        if not logs: st.caption('Henüz çalışma kaydı yok.')
-    st.caption('Süreler bitirip kaydettiğinde grafiklere eklenir. Kayıt tarihi bitiş günüdür. Kronometre diğer sayfalarda da süre sayar; oturum kapanırsa kayıtlar kaybolabilir.')
-    st.subheader('Soru ve konu istatistikleri')
-    answers=[v for k,v in s.answers.items() if k.startswith(level+'|')]
-    correct=sum(v[0] for v in answers)
-    a,b=st.columns(2); a.metric('Doğru',correct); b.metric('Yanlış',len(answers)-correct)
-    st.metric('Tamamlanan konu',sum(v for k,v in s.done.items() if k.startswith(level+'|')))
-    if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
-    st.caption('Veriler yalnızca mevcut oturumda tutulur.')
+    if room and quiet: st.caption('Grafikleri görmek için Çalışma takibine dön veya kutunun işaretini kaldır.')
+    if not (room and quiet):
+        logs=[x for x in s.study_logs if x['level']==level]
+        today=study_day(); monday=today-timedelta(days=today.weekday())
+        week=[x for x in logs if monday<=x['date']<=today]
+        a,b=st.columns(2)
+        a.metric('Bugün',duration(today_seconds()))
+        b.metric('Bu hafta',duration(sum(x['seconds'] for x in week)))
+        target=profile_coach['minutes']*60
+        st.progress(min(1.0,today_seconds()/target),text=f'Günlük hedef: {profile_coach["minutes"]} dakika')
+        st.subheader('Haftalık çalışma grafiği')
+        days=[monday+timedelta(days=i) for i in range(7)]
+        frame=pd.DataFrame({'Gün':[d.strftime('%d.%m') for d in days],'Dakika':[round(sum(x['seconds'] for x in week if x['date']==d)/60,2) for d in days]})
+        st.bar_chart(frame,x='Gün',y='Dakika',color=accent)
+        st.subheader('Derslere göre çalışma süresi')
+        if week:
+            frame=pd.DataFrame({'Ders':list(TOPICS),'Dakika':[round(sum(x['seconds'] for x in week if x['subject']==name)/60,2) for name in TOPICS]})
+            st.bar_chart(frame,x='Ders',y='Dakika',color=accent)
+        else: st.info('Grafikler ilk çalışma kaydından sonra dolacak.')
+        with st.expander('Çalışma geçmişim'):
+            for item in reversed(logs):
+                st.write(f"{item['date']:%d.%m.%Y} · {item['subject']} · {item['topic']} · {int(item['seconds'])//60} dk. {int(item['seconds'])%60} sn.")
+            if not logs: st.caption('Henüz çalışma kaydı yok.')
+        st.caption('Süreler bitirip kaydettiğinde grafiklere eklenir. Kayıt tarihi bitiş günüdür. Kronometre diğer sayfalarda da süre sayar; oturum kapanırsa kayıtlar kaybolabilir.')
+        st.subheader('Soru ve konu istatistikleri')
+        answers=[v for k,v in s.answers.items() if k.startswith(level+'|')]
+        correct=sum(v[0] for v in answers)
+        a,b=st.columns(2); a.metric('Doğru',correct); b.metric('Yanlış',len(answers)-correct)
+        st.metric('Tamamlanan konu',sum(v for k,v in s.done.items() if k.startswith(level+'|')))
+        if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
+        st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.12 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.13 · Ar-Ge sürümü · Veriler oturumluk')
 
 # Aslan ve canlı koçluk: bağımsız demo bileşenleri.
 st.markdown("""<style>
