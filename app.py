@@ -3,27 +3,7 @@ import streamlit as st
 st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='wide')
 
 from datetime import datetime, timezone, timedelta
-THEMES = {
-    'Aydınlık': ('#f3f6fc','#ffffff','#17243d','#475569','#5264df','#ffffff','#dce3ef','#e5eaff','#26366c','#dce4ff'),
-    'Koyu': ('#10151f','#202938','#e4eaf5','#aebbd0','#8295ef','#10151f','#39465b','#192337','#263653','#dce4ff'),
-    'Loş ışık': ('#29241c','#3a3225','#f0dfc0','#d0bd9e','#cba46a','#29241c','#63523b','#33291e','#493923','#f0dfc0'),
-    'Kâğıt': ('#f2ebdd','#fbf5e9','#493d2c','#75634a','#8b6937','#ffffff','#d8cbb4','#e8dcc5','#685238','#fff1d7'),
-}
-for key, value in {'appearance_mode':'Aydınlık','appearance_auto':False,'appearance_font':'Normal'}.items():
-    if key not in st.session_state: st.session_state[key]=value
-with st.container(key='appearance_panel'):
-    left, right = st.columns([3,2])
-    with right:
-        with st.popover('Görünüm', use_container_width=True):
-            st.radio('Renk modu', list(THEMES), key='appearance_mode')
-            st.checkbox('Akşamları otomatik loş ışık', key='appearance_auto')
-            st.radio('Yazı boyutu', ['Küçük','Normal','Büyük'], key='appearance_font', horizontal=True)
-            st.caption('Tercihler mevcut oturumda saklanır. Otomatik mod 19.00–07.00 arasında, ekran yenilendiğinde uygulanır.')
-mode=st.session_state.appearance_mode
-hour=datetime.now(timezone(timedelta(hours=3))).hour
-if st.session_state.appearance_auto and (hour>=19 or hour<7): mode='Loş ışık'
-bg,surface,fg,muted,accent,onaccent,border,tint,hero,hero_text=THEMES[mode]
-font_size={'Küçük':14,'Normal':16,'Büyük':18}[st.session_state.appearance_font]
+accent = '#5264df'
 
 st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
@@ -85,10 +65,6 @@ st.markdown("""<style>
 [class*="st-key-nav"] button {border-radius:14px;min-height:48px}.st-key-enter button {min-height:54px;border-radius:16px}.mini-stat{background:white;border:1px solid #e0e6f0;border-radius:18px;padding:16px}.mini-stat small{color:#64748b;font-size:12px}.mini-stat strong{display:block;font:800 25px Manrope,Arial;color:#17243d;margin-top:5px}
 @media(max-width:600px){.orbit-panel{padding:18px;min-height:180px;border-radius:22px}.orbit-copy span{font-size:12px}.welcome{min-height:55vh}.welcome strong{font-size:48px}}
 </style>""",unsafe_allow_html=True)
-theme_css = '\n.stApp {background:radial-gradient(ellipse at 90% 0%,TINT 0%,BG 50%)!important;color:FG!important;color-scheme:SCHEME}\n.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {color:FG!important}\n.stApp p,.stApp label,.stApp h1,.stApp h2,.stApp h3,.stApp h4,.stApp li,.stApp input,.stApp textarea,.brand-name,.mini-stat strong {color:FG!important}\n.stApp p,.stApp label,.stApp input,.stApp textarea,.stApp li {font-size:SIZEpx}\n[data-testid="stCaptionContainer"] p,[data-testid="stWidgetLabel"] p,.mini-stat small,[data-testid="stMetricLabel"] p {color:MUTED!important}\n[data-baseweb="select"] > div,[data-baseweb="input"],[data-baseweb="textarea"],[data-baseweb="popover"],[data-baseweb="menu"],[role="listbox"],[role="option"], [data-testid="stPopoverBody"],[role="dialog"] {background:SURFACE!important;color:FG!important;border-color:BORDER!important}\n[data-baseweb="select"] span,[data-baseweb="select"] input {color:FG!important}\n[data-testid="stExpander"],[data-testid="stMetric"],[data-testid="stVerticalBlockBorderWrapper"],[data-testid="stForm"],.mini-stat,[data-testid="stChatMessage"] {background:SURFACE!important;border-color:BORDER!important;color:FG!important}\n[data-testid="stMetricValue"] {color:ACCENT!important}\n.stButton button,.stFormSubmitButton button,.brand-mark {background:ACCENT!important;color:ONACCENT!important;border-color:transparent!important}\n.stButton button p,.stFormSubmitButton button p {color:inherit!important}\n[class*="st-key-nav"] button,[class*="st-key-menu"] button,[data-testid="stPopoverButton"] {background:SURFACE!important;color:FG!important;border:1px solid BORDER!important}\n[class*="st-key-nav"] button[data-testid="stBaseButton-primary"] {background:ACCENT!important;color:ONACCENT!important}\n[class*="st-key-menu"] button:hover,[class*="st-key-nav"] button:hover {background:TINT!important;color:FG!important}\n.hero,.orbit-panel,.welcome,.study-clock {background:radial-gradient(ellipse at top,HERO,BG 150%)!important;color:HEROTEXT!important}\n.hero small,.hero span,.orbit-copy small,.orbit-copy span,.welcome span,.study-clock div {color:HEROTEXT!important}\n.st-key-aslan_float button {background:HERO!important;color:HEROTEXT!important}\n.st-key-aslan_float button p {color:HEROTEXT!important}\nhr {border-color:BORDER!important}\n'
-for token, value in {"HEROTEXT":hero_text,"ONACCENT":onaccent,"SURFACE":surface,"ACCENT":accent,"BORDER":border,"MUTED":muted,"TINT":tint,"HERO":hero,"SCHEME":"dark" if mode in ("Koyu","Loş ışık") else "light","SIZE":str(font_size),"BG":bg,"FG":fg}.items():
-    theme_css=theme_css.replace(token,value)
-st.markdown("<style>"+theme_css+"</style>",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
 'Matematik':['Temel kavramlar','Sayılar','Bölünebilme','Rasyonel sayılar','Üslü ve köklü sayılar','Denklemler','Oran ve orantı','Problemler','Sayısal mantık','Geometri'],
@@ -413,7 +389,18 @@ elif s.page in ['Çalışma takibim','Odaklanma odası']:
         st.caption('Dersini seç, kronometreni başlat ve çalışmaya odaklan.')
         if st.button('Ana sayfaya dön',key='room_home'): go('Ana sayfa')
         if st.button('Çalışma takibine dön',key='room_tracking'): go('Çalışma takibim')
-        quiet=st.checkbox('Grafikleri gizle',key='room_quiet',value=False)
+        quiet=st.checkbox('Grafikleri gizle',key='room_quiet',value=True)
+        night=st.toggle('Yıldızlı gece atmosferi',key='room_night',value=False)
+        if night:
+            st.markdown("""<style>
+.stApp {background:radial-gradient(ellipse at 50% 10%,#23365d,#080f21 75%) !important;color-scheme:dark}
+.stApp h1,.stApp h2,.stApp h3,.stApp p,.stApp label,.brand-name {color:#e5edff!important}
+[data-baseweb="select"] > div {background:#17243d!important;border-color:#52658a!important}
+[data-baseweb="select"] span,[data-baseweb="select"] input {color:#e5edff!important}
+[class*="st-key-nav"] button {background:#192842!important;color:#e5edff!important;border-color:#405276!important}
+[data-testid="stMetric"],[data-testid="stExpander"] {background:#17243d!important;border-color:#405276!important}
+.study-clock {background:radial-gradient(circle at 12% 20%,white 1px,transparent 2px),radial-gradient(circle at 77% 33%,#dbeafe 1px,transparent 2px),radial-gradient(circle at 45% 70%,#a5b4fc 1px,transparent 2px),linear-gradient(145deg,#15284b,#070d1c)!important;background-size:79px 83px,113px 97px,151px 121px,100% 100%!important;box-shadow:0 0 35px #8295ef22}
+</style>""",unsafe_allow_html=True)
 
     timer=s.study_timer
     if timer is None:
@@ -445,6 +432,9 @@ elif s.page in ['Çalışma takibim','Odaklanma odası']:
                 s.study_timer=None
                 st.rerun()
     clock()
+    if room:
+        import streamlit.components.v1 as components
+        components.html('<html lang="tr"><meta charset="utf-8"><style>body{margin:0;font:14px system-ui;color:#17243d} .panel{padding:16px;background:#eef1fb;border-radius:18px} select,button{font:inherit;padding:10px;border:1px solid #aab5d0;border-radius:9px;background:white;color:#17243d} button{cursor:pointer} label{display:block;margin:12px 0} input{width:65%;vertical-align:middle} #status{font-size:12px}</style><div class="panel"><strong>🎧 Odaklanma sesleri</strong><label><select id="sound" aria-label="Ses seç"><option>Yağmur</option><option>Deniz</option><option>Şömine</option><option>Orman</option><option>Kütüphane</option><option>Lo-fi</option><option>Beyaz gürültü</option></select></label><button id="play">▶ Oynat</button> <button id="stop">■ Durdur</button><label>Ses <input id="vol" type="range" min="0" max="100" value="25"> <span id="pct">25%</span></label><div id="status" role="status">Hazır · Sesler tarayıcıda üretilir.</div></div><script>\nlet ctx,master,nodes=[],playing=false;const $=id=>document.getElementById(id);function stop(){nodes.forEach(n=>{try{n.stop()}catch(e){}try{n.disconnect()}catch(e){}});nodes=[];if(master)master.disconnect();playing=false;$(\'status\').textContent=\'Durduruldu\';}function osc(freq,type,gain,dest){let o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=gain;o.connect(g);g.connect(dest);o.start();nodes.push(o,g);return o;}async function play(){stop();try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();master=ctx.createGain();master.gain.value=Number($(\'vol\').value)/100*.5;master.connect(ctx.destination);let name=$(\'sound\').value;let b=ctx.createBuffer(1,ctx.sampleRate*12,ctx.sampleRate),d=b.getChannelData(0),last=0;for(let i=0;i<d.length;i++){let w=Math.random()*2-1;last=.96*last+.04*w;let t=i/ctx.sampleRate;d[i]=name===\'Beyaz gürültü\'?w:name===\'Şömine\'?last*.7+(Math.random()<.001?w*.8:0):name===\'Deniz\'?last*(.6+.4*Math.sin(t*Math.PI/3))*3:name===\'Yağmur\'?w*.35+last*2:last*2;}let src=ctx.createBufferSource();src.buffer=b;src.loop=true;let f=ctx.createBiquadFilter();f.type=\'lowpass\';f.frequency.value={\'Yağmur\':5500,\'Deniz\':650,\'Şömine\':1800,\'Orman\':1200,\'Kütüphane\':350,\'Lo-fi\':450,\'Beyaz gürültü\':18000}[name];src.connect(f);let g=ctx.createGain();g.gain.value=name===\'Lo-fi\'?.08:.65;f.connect(g);g.connect(master);src.start();nodes.push(src,f,g);if(name===\'Lo-fi\'){[130.81,164.81,196,246.94].forEach((hz,i)=>osc(hz,\'sine\',.055,master));}if(name===\'Orman\'){let o=osc(1800,\'sine\',.012,master);let l=ctx.createOscillator(),a=ctx.createGain();l.frequency.value=.7;a.gain.value=220;l.connect(a);a.connect(o.frequency);l.start();nodes.push(l,a);}playing=true;$(\'status\').textContent=name+\' · Oynatılıyor (sentetik ses)\';}catch(e){stop();$(\'status\').textContent=\'Ses açılamadı. Tekrar deneyin.\';}}$(\'play\').onclick=play;$(\'stop\').onclick=stop;$(\'sound\').onchange=()=>{if(playing)play()};$(\'vol\').oninput=()=>{$(\'pct\').textContent=$(\'vol\').value+\'%\';if(master)master.gain.value=Number($(\'vol\').value)/100*.5};window.addEventListener(\'pagehide\',stop);\n</script></html>',height=245,scrolling=False)
     if room and quiet: st.caption('Grafikleri görmek için Çalışma takibine dön veya kutunun işaretini kaldır.')
     if not (room and quiet):
         logs=[x for x in s.study_logs if x['level']==level]
