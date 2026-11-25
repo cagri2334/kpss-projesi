@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title='KPSS | Demo', page_icon='📚', layout='wide')
+st.set_page_config(page_title='ÇAM Akademi | KPSS', page_icon='🌲', layout='wide')
 
 from datetime import datetime, timezone, timedelta
 accent = '#5264df'
@@ -64,6 +64,19 @@ st.markdown("""<style>
 .welcome {min-height:58vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 40%,#354b92,#101a38 72%);border-radius:30px;color:white;padding:24px}.welcome .orbit-art{width:240px;max-width:85%}.welcome strong{font:800 58px Manrope,Arial;letter-spacing:-4px}.welcome span{color:#c5d2f5;font-size:15px;margin-top:8px}
 [class*="st-key-nav"] button {border-radius:14px;min-height:48px}.st-key-enter button {min-height:54px;border-radius:16px}.mini-stat{background:white;border:1px solid #e0e6f0;border-radius:18px;padding:16px}.mini-stat small{color:#64748b;font-size:12px}.mini-stat strong{display:block;font:800 25px Manrope,Arial;color:#17243d;margin-top:5px}
 @media(max-width:600px){.orbit-panel{padding:18px;min-height:180px;border-radius:22px}.orbit-copy span{font-size:12px}.welcome{min-height:55vh}.welcome strong{font-size:48px}}
+
+.welcome {background:radial-gradient(ellipse at 50% 35%,#205345,#102c26 75%);gap:10px;min-height:65vh}
+.welcome .cam-emblem {width:150px;max-width:45%;animation:cam-reveal .8s ease-out}
+.welcome strong {font-size:58px;letter-spacing:9px;color:#f6f7f3;margin-top:12px}
+.welcome .cam-sub {color:#d5bd88;font-size:17px;letter-spacing:7px;font-weight:600;margin:0}
+.brand-mark {background:#123d32;width:48px;height:48px;padding:7px;box-sizing:border-box}
+.brand-mark svg {width:100%;height:100%}
+.brand-name {font-size:25px;letter-spacing:-1px;color:#123d32}
+.st-key-enter button {background:#123d32;border-color:#123d32}
+.st-key-enter button:hover {background:#205345}
+@keyframes cam-reveal {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.welcome .cam-emblem{animation:none}}
+@media(max-width:600px){.welcome strong{font-size:48px}.brand-name{font-size:22px}}
 </style>""",unsafe_allow_html=True)
 TOPICS={
 'Türkçe':['Sözcükte anlam','Cümlede anlam','Paragraf','Ses bilgisi','Sözcük türleri','Cümlenin ögeleri','Yazım kuralları','Noktalama','Sözel mantık'],
@@ -82,13 +95,14 @@ def orbit(value=None):
     label='—' if value is None else f'%{value}'
     arc=0 if value is None else 2.82743*value
     return f'''<svg class="orbit-art" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Örnek cevap başarı göstergesi"><defs><radialGradient id="halo"><stop stop-color="#849cff" stop-opacity=".45"/><stop offset="1" stop-color="#849cff" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="150" r="145" fill="url(#halo)"/><g fill="none" stroke="#9db4ff" stroke-opacity=".4"><circle cx="150" cy="150" r="125" stroke-dasharray="2 7"/><ellipse cx="150" cy="150" rx="135" ry="65" transform="rotate(-35 150 150)"/><ellipse cx="150" cy="150" rx="135" ry="65" transform="rotate(35 150 150)"/></g><circle cx="150" cy="150" r="45" fill="none" stroke="#7288c9" stroke-width="6"/><circle cx="150" cy="150" r="45" fill="none" stroke="#9af2da" stroke-width="6" stroke-dasharray="{arc} 283" transform="rotate(-90 150 150)" stroke-linecap="round"/><g class="orbit-dot"><circle cx="150" cy="25" r="6" fill="#9af2da"/><circle cx="150" cy="275" r="4" fill="#aebfff"/></g><text x="150" y="157" text-anchor="middle" fill="white" font-size="25" font-weight="700">{label}</text></svg>'''
+CAM_LOGO = '<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#D5BD88" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M60 10 L110 110 H10 Z"/><path d="M60 49 L90 110 M60 49 L30 110 M60 49 V130"/></g></svg>'
 if not s.get('entered_v08',False):
-    st.markdown(f'<div class="welcome">{orbit()}<strong>KPSS.</strong><span>Kişisel eğitim ve kariyer asistanı</span></div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="welcome"><div class="cam-emblem">{CAM_LOGO}</div><strong>ÇAM</strong><span class="cam-sub">AKADEMİ</span></div>',unsafe_allow_html=True)
     if st.button('Uygulamaya giriş',key='enter',use_container_width=True):
         s.entered_v08=True
         st.rerun()
     st.stop()
-st.markdown('<div class="brand"><div class="brand-mark">K</div><div class="brand-name">KPSS.</div></div>',unsafe_allow_html=True)
+st.markdown(f'<div class="brand"><div class="brand-mark">{CAM_LOGO}</div><div class="brand-name">ÇAM Akademi</div></div>',unsafe_allow_html=True)
 level=st.selectbox('Sınav seviyen',['Ortaöğretim','Ön lisans','Lisans'],key='level')
 def go(page):
     s.page=page
@@ -467,7 +481,7 @@ elif s.page in ['Çalışma takibim','Odaklanma odası']:
         if answers: st.progress(correct/len(answers),text=f'Başarı: %{round(100*correct/len(answers))}')
         st.caption('Veriler yalnızca mevcut oturumda tutulur.')
 st.divider()
-st.caption('V0.13 · Ar-Ge sürümü · Veriler oturumluk')
+st.caption('V0.16 · Ar-Ge sürümü · Veriler oturumluk')
 
 # Aslan ve canlı koçluk: bağımsız demo bileşenleri.
 st.markdown("""<style>
